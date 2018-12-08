@@ -118,22 +118,9 @@ class utils():
         # Convert cron to readable before listing values
         for job in jobs:
 
-            creation = job.creation
-            updated = job.updated
-            emails = job.emails
             project_id = job.project_id
-            bucket_id = job.bucket_id
-            machine_name = job.machine_name
-            startup_script = job.startup_script
-            machine_type = job.machine_type
-            machine_zone = job.machine_zone
-            machine_os = job.machine_os
             cron_schedule = job.cron_schedule
-            after_run = job.after_run
-            max_running_time = job.max_running_time
-            job_name = job.job_name
             job_status = job.job_status
-            last_run = job.last_run
 
             nextRunTime = self.cron_next_run(cron_schedule)
             roundedDownTime = self.roundDownTime()
@@ -160,6 +147,40 @@ class utils():
         jobs = self.get_job_list()
 
         ####################################################
+        # JOBS TO STOP FROM QUEUE
+        ####################################################
+        queues = self.get_queue_list()
+
+        for queue in queues:
+
+            creation = queue.creation
+            project_id = queue.project_id
+            machine_name = queue.machine_name
+            after_run = queue.after_run
+            max_running_time = queue.max_running_time
+            machine_zone = queue.machine_zone
+
+            # Elapsed time in min of job running
+            elapsed_time = self.elapsed_min_after_run(creation)
+            print(elapsed_time)
+
+            # Check job which reach max run time and stop or delete instances
+            if elapsed_time - (MAX_GRACE_MIN + int(max_running_time)) >= 0:
+
+                # Stop instance if instance must be stopped
+                if after_run == STOP_AFTER_RUN_VALUE:
+                    new_instance = instance(project_id)
+                    new_instance.stop(machine_name, machine_zone)
+
+                # Delete instance if instance must be deleted
+                if after_run == DELETE_AFTER_RUN_VALUE:
+                    new_instance = instance(project_id)
+                    new_instance.delete(machine_name, project_id, machine_zone)
+
+                # Remove from Queue
+                self.delete_queue(queue)
+
+        ####################################################
         # JOBS TO RUN QUEUE
         ####################################################
 
@@ -179,46 +200,15 @@ class utils():
 
             # Add new job to the jobs queue
             if min_before <= MIN_TIME_TO_RUN:
-                queue = jobmodel.Queue(project_id=project_id, machine_name=machine_name, machine_zone=machine_zone,
-                                       after_run=after_run,max_running_time=max_running_time,job_name=job_name)
-                queue.put()
+                self.create_queue(self, project_id, machine_name, machine_zone, after_run, max_running_time, job_name)
 
-        ####################################################
-        # JOBS TO RUN STOP
-        ####################################################
-        queues = self.get_queue_list()
+        # After creating queue, run queue
 
-        for queue in queues:
-
-            creation=queue.creation
-            project_id=queue.project_id
-            machine_name=queue.machine_name
-            after_run = queue.after_run
-            max_running_time = queue.max_running_time
-            job_name = queue.job_name
-            machine_zone=queue.machine_zone
-
-            # Elapsed time in min of job running
-            elapsed_time = self.elapsed_min_after_run(creation)
-            print(elapsed_time)
-
-            # Check job which reach max run time and stop or delete instances
-            if elapsed_time - (MAX_GRACE_MIN + int(max_running_time)) >=0:
-
-                # Stop instance if instance must be stopped
-                if after_run == STOP_AFTER_RUN_VALUE:
-                    new_instance = instance(project_id)
-                    new_instance.stop(machine_name, machine_zone)
-
-                # Delete instance if instance must be deleted
-                if after_run == DELETE_AFTER_RUN_VALUE:
-                    new_instance = instance(project_id)
-                    new_instance.delete(machine_name, project_id, machine_zone)
 
 
 
     ####################################################################################
-    # ********** INSTANCES MANIPULATION
+    # *****  INSTANCES MANIPULATION
     ####################################################################################
     """
         Stop GCE instances (and jobs)
@@ -232,22 +222,8 @@ class utils():
         # Convert cron to readable before listing values
         for job in jobs:
 
-            creation = job.creation
-            updated = job.updated
-            emails = job.emails
             project_id = job.project_id
-            bucket_id = job.bucket_id
-            machine_name = job.machine_name
-            startup_script = job.startup_script
-            machine_type = job.machine_type
-            machine_zone = job.machine_zone
-            machine_os = job.machine_os
-            cron_schedule = job.cron_schedule
-            after_run = job.after_run
-            max_running_time = job.max_running_time
-            job_name = job.job_name
             job_status = job.job_status
-            last_run = job.last_run
 
         # Check if job is already running
         if job_status == JOB_RUNNING_STATUS:
@@ -380,3 +356,11 @@ class utils():
     def get_queue_list(self):
 
         return jobmodel.Queue().get(" ORDER BY creation DESC")
+
+    def create_queue(self, project_id, machine_name, machine_zone, after_run, max_running_time, job_name):
+        queue = jobmodel.Queue(project_id=project_id, machine_name=machine_name, machine_zone=machine_zone,
+                               after_run=after_run, max_running_time=max_running_time, job_name=job_name)
+        queue.put()
+
+    def delete_queue(self, queue):
+        queue.key.delete()
