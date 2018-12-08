@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Tiny GCP Scheduler</title>
-    <link href="//fonts.googleapis.com/css?family=Roboto:400,500|Inconsolata:400,700|Roboto Mono:400" rel="stylesheet" type="text/css">
     <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <link href="//fonts.googleapis.com/css?family=Roboto:400,500|Inconsolata:400,700|Roboto Mono:400" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body>
     <header class="">
@@ -39,9 +40,10 @@
             <input type ="text" name="project_id" value="{{project_id_value}}"  placeholder="Google Cloud Project id" class="inline-block">
             <input type ="text" name="bucket_id" value="{{bucket_id_value}}" placeholder="Google Cloud Storage working bucket id" class="inline-block">
             <input type ="text" name="machine_name" value="{{machine_name_value}}" placeholder="Google Compute Engine to create name" class="inline-block">
-             <input type ="text" name="startup_script" value="{{startup_script_value}}" placeholder="Script to run on machine launching" class="inline-block">
+             <input type ="text" name="startup_script" value="{{startup_script_value}}" placeholder="Script to run from GCS on machine launching: gcs://.." class="inline-block">
             <select name="machine_type">
                 <option value="{{machine_type_value}}">Select your GCE machine type </option>
+                <option value="f1-micro">f1-micro</option>
                 <option value="g1-small">g1-small</option>
                 <option value="n1-highcpu-8">n1-highcpu-8</option>
                 <option value="n1-highmem-2">n1-highmem-2</option>
@@ -65,8 +67,7 @@
             <input  name="max_running_time" value="{{max_running_time_value}}" type ="text" placeholder="Maximum running time in minutes" class="inline-block">
 
 
-            <input class="button button-primary inline-block"
-                   type="submit" value="{{operation}}">
+            <button class="button btn add button-primary inline-block" type="submit" value="{{operation}}"/>
         </form>
     </div>
 </main>

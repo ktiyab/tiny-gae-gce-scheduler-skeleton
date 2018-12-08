@@ -14,6 +14,8 @@ import time
 from compute import instance
 from .model import job as jobmodel
 import logging
+import decimal
+
 
 JOB_RUNNING_STATUS = "running"
 MIN_TIME_TO_RUN = 1
@@ -24,6 +26,21 @@ DELETE_AFTER_RUN_VALUE="delete"
 
 GCE_TERMINATED_STATUS = "TERMINATED"
 GCE_RUNNING_STATUS    = "RUNNING"
+
+"""
+                <option value="f1-micro">f1-micro</option>
+                <option value="g1-small">g1-small</option>
+                <option value="n1-highcpu-8">n1-highcpu-8</option>
+                <option value="n1-highmem-2">n1-highmem-2</option>
+"""
+# Estimated hourly pricing at 2018/12
+GCE_PRINCING = {
+    "f1-micro":"0.0076",
+    "g1-small":"0.0257",
+    "n1-highcpu-8":"0.2836",
+    "n1-highmem-2":"0.1184"
+}
+GCE_PRINCING_CURRENCY = "$"
 
 
 # More minute add to wait before stopping or deleting instance
@@ -56,7 +73,7 @@ class utils():
 
     # Return valid instance name
     def valid_instance_name(self, name):
-        return re.sub(r'\W+', '-', name)
+        return re.sub(r'\W+', '-', name.lower())
 
     def readable_cron(self, value):
         return str(ExpressionDescriptor(value))
@@ -106,6 +123,30 @@ class utils():
         diff = current_time - run_time
         return (diff.days * 24 * 60) + (diff.seconds / 60)
 
+
+    def is_job_config_valid(self, emails, cron_schedule, max_running_time):
+
+        message = ""
+        #Check crontab
+        if not self.is_cron_valid(cron_schedule):
+            message = message + "\n Cron value is not valid, please correct the value."
+
+        # Check if emails is valid
+        emails_list = emails.split(",")
+
+        for email in emails_list:
+            if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email) == None:
+                message = message + "\n Email is not valid email, please correct your email."
+
+        # Check is max run time in minute is valide number
+        try:
+            int(max_running_time)+1
+        except ValueError:
+            message = message + "\n Value of max run time (in minute) is not valid."
+            pass
+
+        return message
+
     ####################################################################################
     # ********** JOBS MANIPULATION
     ####################################################################################
@@ -124,14 +165,15 @@ class utils():
             job_status = job.job_status
 
             # Check if job is already running
+            print(">>>>>>>> Run status is "+ job_status)
             if job_status != JOB_RUNNING_STATUS:
                 # Run job by initializing new client
                 new_instance = instance(project_id)
                 new_instance.run_job(job)
-                last_run = datetime.datetime.utcnow()
+                last_run = datetime.utcnow()
                 self.update_job(job.job_name, job.emails, job.project_id, job.bucket_id, job.machine_type,
                                 job.machine_name, job.startup_script, job.machine_zone, job.after_run,
-                                job.machine_os, job.cron_schedule, job.max_running_time, job_name, last_run)
+                                job.machine_os, job.cron_schedule, job.max_running_time, job_name, last_run, JOB_RUNNING_STATUS)
 
     """
         Watch jobs and find wich ones must be launch in MIN_TIME_TO_RUN
@@ -156,10 +198,12 @@ class utils():
             after_run = queue.after_run
             max_running_time = queue.max_running_time
             machine_zone = queue.machine_zone
+            job_name = queue.job_name
 
             # Elapsed time in min of job running
             elapsed_time = self.elapsed_min_after_run(creation)
             print(elapsed_time)
+            print(elapsed_time - (MAX_GRACE_MIN + int(max_running_time)))
 
             # Check job which reach max run time and stop or delete instances
             if elapsed_time - (MAX_GRACE_MIN + int(max_running_time)) >= 0:
@@ -167,7 +211,7 @@ class utils():
                 # Stop instance if instance must be stopped
                 if after_run == STOP_AFTER_RUN_VALUE:
                     new_instance = instance(project_id)
-                    new_instance.stop(machine_name, machine_zone)
+                    new_instance.stop(machine_name, project_id, machine_zone)
 
                 # Delete instance if instance must be deleted
                 if after_run == DELETE_AFTER_RUN_VALUE:
@@ -176,6 +220,8 @@ class utils():
 
                 # Remove from Queue
                 self.delete_queue(queue)
+                # Set job status to standby
+                self.queue_update_job(job_name)
 
         ####################################################
         # JOBS TO RUN QUEUE
@@ -197,7 +243,7 @@ class utils():
 
             # Add new job to the jobs queue -- Min time to run is the latence between processing and effectif run
             if min_before <= MIN_TIME_TO_RUN:
-                self.create_queue(self, project_id, machine_name, machine_zone, after_run, max_running_time, job_name)
+                self.create_queue(project_id, machine_name, machine_zone, after_run, max_running_time, job_name)
 
         # After creating queue, run queue
         self.run_job_queue()
@@ -243,6 +289,22 @@ class utils():
     ####################################################################################
     # *****  INSTANCES MANIPULATION
     ####################################################################################
+
+    """
+        Get instance pricing
+    """
+    def get_estimate_running_cost(self, machine_type, max_run_time):
+
+        hourly_cost  = GCE_PRINCING[machine_type]
+
+        cost = (((int(max_run_time)+MAX_GRACE_MIN) * float(hourly_cost))/ 60)
+
+        return decimal.Decimal(cost).quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_UP)
+
+    def formated_estimate_running_cost(self, machine_type, max_run_time):
+        cost = self.get_estimate_running_cost(machine_type, max_run_time)
+        return str(cost) + GCE_PRINCING_CURRENCY
+
     """
         Stop GCE instances (and jobs)
         - jobs: list of JOB
@@ -358,7 +420,10 @@ class utils():
 
     def update_job(self,job_to_update_name,emails, project_id, bucket_id, machine_type,
                    machine_name, startup_script, machine_zone, after_run,
-                   machine_os, cron_schedule, max_running_time, job_name, last_run):
+                   machine_os, cron_schedule, max_running_time, job_name, last_run, status=None):
+
+        if status == None:
+            status = JOB_DEFAULT_STATUS
 
         existing_job = self.get_job_by_name(job_to_update_name)
 
@@ -376,7 +441,7 @@ class utils():
             new_job.cron_schedule = cron_schedule
             new_job.max_running_time = max_running_time
             new_job.job_name = job_name
-            new_job.job_status = JOB_DEFAULT_STATUS
+            new_job.job_status = status
             new_job.last_run=last_run
             new_job.put()
 
@@ -400,3 +465,30 @@ class utils():
 
     def delete_queue(self, queue):
         queue.key.delete()
+
+
+    def queue_update_job(self, job_name):
+
+        existing_job = self.get_job_by_name(job_name)
+
+        if len(existing_job) > 0:
+            new_job = existing_job[0]
+            new_job.emails = new_job.emails
+            new_job.project_id = new_job.project_id
+            new_job.bucket_id = new_job.bucket_id
+            new_job.machine_name = self.valid_instance_name(new_job.machine_name)
+            new_job.startup_script = new_job.startup_script
+            new_job.machine_type = new_job.machine_type
+            new_job.machine_zone = new_job.machine_zone
+            new_job.after_run = new_job.after_run
+            new_job.machine_os = new_job.machine_os
+            new_job.cron_schedule = new_job.cron_schedule
+            new_job.max_running_time = new_job.max_running_time
+            new_job.job_name = new_job.job_name
+            new_job.job_status = JOB_DEFAULT_STATUS
+            new_job.last_run=new_job.last_run
+            new_job.put()
+
+            return True
+
+        return False

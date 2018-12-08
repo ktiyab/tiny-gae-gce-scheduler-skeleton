@@ -242,7 +242,7 @@ class ComputeEngineClient(object):
                 'items': [{
                     # Startup script is automatically executed by the
                     # instance upon startup.
-                    'key': 'startup-script',
+                    'key': 'startup-script-url',
                     'value': startup_script
                 },
                 {

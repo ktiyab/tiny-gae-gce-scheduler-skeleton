@@ -168,16 +168,69 @@ def list_job():
 
     if len(jobs) > 0:
         # Convert cron to readable before listing values
-        for job_entity in jobs:
-            job_entity.cron_schedule = app_utils.readable_cron(job_entity.cron_schedule)
+        for job in jobs:
+
+            # Intialize template
+            job_entity = {
+                "creation":"",
+                "updated": "",
+                "project_id": "",
+                "machine_name": "",
+                "machine_type": "",
+                "machine_zone": "",
+                "cron_schedule": "",
+                "after_run": "",
+                "max_running_time": "",
+                "job_name": "",
+                "last_run": "",
+                "run_unit_cost": "",
+                "job_status":"",
+                "startup_script": ""
+            }
+
+            # Get db values
+            creation = job.creation
+            updated = job.updated
+            project_id = job.project_id
+            machine_name = job.machine_name
+            machine_type = job.machine_type
+            machine_zone = job.machine_zone
+            cron_schedule = job.cron_schedule
+            after_run = job.after_run
+            max_running_time = job.max_running_time
+            job_name = job.job_name
+            job_status = job.job_status
+            last_run = job.last_run
+            startup_script=job.startup_script
+
+            # Create new entity with modified and calculated values
+            job_entity['creation']=creation
+            job_entity['updated'] = updated
+            job_entity['machine_type'] = machine_type
+            job_entity['project_id'] = project_id
+            job_entity['machine_zone'] = machine_zone
+            job_entity['max_running_time'] = max_running_time + 'min'
+            job_entity['after_run'] = after_run
+            job_entity['job_name'] = job_name
+            job_entity['last_run'] = last_run
+            job_entity['startup_script'] = startup_script
+
+
+            # Readable cron
+            job_entity['cron_schedule'] = app_utils.readable_cron(cron_schedule)
 
             # Check if instance is running for every job
-            status = app_utils.instance_status(job_entity.machine_name, job_entity.project_id,
-                                               job_entity.job_status)
+            status = app_utils.instance_status(machine_name, project_id, job_status)
+
+
+            # Get estimate pricing
+            job_entity['run_unit_cost'] = app_utils.formated_estimate_running_cost(machine_type, max_running_time)
 
             # Chek job + instance status
             if status != None:
-                job_entity.job_status=status
+                job_entity['job_status']=status
+            else:
+                job_entity['job_status'] =job_status
 
             formated_jobs.append(job_entity)
 
@@ -215,19 +268,31 @@ def create_job():
 
         existing_job=app_utils.get_job_by_name(job_name)
 
+        print(existing_job)
+        print(len(existing_job))
+
         logging.info("create_job: Saving new job "+request.form['job_name']+" to datastore ...")
 
+        is_valid_conf = app_utils.is_job_config_valid(emails, cron_schedule, max_running_time)
+
+        print( is_valid_conf )
+
         # If job exist redirect user to update job page with alert
-        if len(existing_job) > 0:
+        if len(existing_job) > 0 or is_valid_conf!="":
 
             if existing_job[0].job_name == request.form['job_name']:
 
                 alert_type ="errorDialog"
-                alert_message="Job already exist with the same name <b>" +existing_job[0].job_name+ "</b>"
+
+                if len(existing_job) > 0:
+                    alert_message="Job already exist with the same name " +existing_job[0].job_name
+                    logging.info("Job already exist with the same name  " + request.form['job_name'] + " in datastore ...")
+                else:
+                    alert_message = "Cron value is not valid, please correct the value."
+                    logging.info("Cron value ("+cron_schedule+") is not valid, please correct the value.")
+
                 operation_type="correct_before_insert"
                 old_name="None"
-
-                logging.info("Job already exist with the same name  " + request.form['job_name'] + " in datastore ...")
 
                 return redirect(url_for('modify_job_info',emails=emails, project_id=project_id, bucket_id=bucket_id,
                               machine_name=app_utils.valid_instance_name(machine_name), startup_script=startup_script,
@@ -238,9 +303,23 @@ def create_job():
 
         else:
 
-            result = app_utils.create_job(emails, project_id, bucket_id, machine_type,
-                   machine_name, startup_script, machine_zone, after_run,
-                   machine_os, cron_schedule, max_running_time, job_name)
+            if is_valid_conf=="":
+                result = app_utils.create_job(emails, project_id, bucket_id, machine_type,
+                       machine_name, startup_script, machine_zone, after_run,
+                       machine_os, cron_schedule, max_running_time, job_name)
+            else:
+                alert_type = "errorDialog"
+                alert_message = is_valid_conf
+                operation_type="correct_before_insert"
+                old_name="None"
+                logging.info(is_valid_conf)
+
+                return redirect(url_for('modify_job_info',emails=emails, project_id=project_id, bucket_id=bucket_id,
+                              machine_name=app_utils.valid_instance_name(machine_name), startup_script=startup_script,
+                              machine_type=machine_type,machine_zone=machine_zone, after_run=after_run,machine_os=machine_os,
+                              cron_schedule=cron_schedule,max_running_time=max_running_time, job_name=job_name,
+                             alert_type=alert_type,alert_message=alert_message, operation_type=operation_type,
+                             old_name=old_name))
 
             #TODO: Operation if insert isn't correct
             return redirect(url_for('list_job'))

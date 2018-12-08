@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Tiny GCP Scheduler</title>
     <link href="//fonts.googleapis.com/css?family=Roboto:400,500|Inconsolata:400,700|Roboto Mono:400" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" type="text/css" href="/static/style.css">
 </head>
 <body>
@@ -78,7 +79,7 @@
             <input name="after_run" value="{{after_run}}" class="hidden">
             <input name="cron_schedule" value="{{cron_schedule}}" class="hidden">
             <input name="max_running_time" value="{{max_running_time}}" class="hidden">
-            <input class="button button-primary inline-block" type="submit" value="Validate job configuration">
+            <button class="button btn validate button-primary inline-block" type="submit" value="Validate job configuration"/>
         </form>   
         </div>
     </main>

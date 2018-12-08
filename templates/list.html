@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Tiny GCP Scheduler</title>
-    <link href="//fonts.googleapis.com/css?family=Roboto:400,500|Inconsolata:400,700|Roboto Mono:400" rel="stylesheet" type="text/css">
     <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <link href="//fonts.googleapis.com/css?family=Roboto:400,500|Inconsolata:400,700|Roboto Mono:400" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body>
     <header class="">
@@ -27,8 +28,8 @@
              <tbody>
                 <tr>
                     <td>Job stopped</td>
-                    <td>Gce terminated</td>
-                    <td>Gce running</td>
+                    <td>GCE terminated</td>
+                    <td>GCE running</td>
                     <td>Job failed</td>
                     <td>Job success</td>
                     <td>Job running</td>
@@ -48,17 +49,15 @@
             <thead>
                 <tr>
                     <th class="mini_label_head">Job name</th>
-                    <th class="mini_label_head" style="display:none">Emails recipient</th>
                     <th class="mini_label_head">Project</th>
-                    <th class="mini_label_head" style="display:none">Bucket</th>
                     <th class="mini_label_head">Instance</th>
-                    <th class="mini_label_head" style="display:none">Startup script</th>
                     <th class="mini_label_head">Type</th>
-                    <th class="mini_label_head" style="display:none">OS</th>
                     <th class="mini_label_head">Zone</th>
+                    <th class="mini_label_head">Startup-script</th>
                     <th class="mini_label_head">After run</th>
                     <th class="mini_label_head">Cron</th>
                     <th class="mini_label_head">Max time</th>
+                    <th class="mini_label_head">Run cost</th>
                     <th class="mini_label_head">Created</th>
                     <th class="mini_label_head">Updated</th>
                     <th class="mini_label_head">Last run</th>
@@ -72,17 +71,15 @@
                 {% for job in jobs %}
                     <tr>
                         <td class="mini_label"><a href="{{ url_for('view_job',job_name=job.job_name) }}">{{job.job_name}}</a></td>
-                        <td class="mini_label" style="display:none">{{job.emails}}</td>
                         <td class="mini_label">{{job.project_id}}</td>
-                        <td class="mini_label" style="display:none">{{job.bucket_id}}</td>
                         <td class="mini_label">{{job.machine_name}}</td>
-                        <td class="mini_label" style="display:none">{{job.startup_script}}</td>
                         <td class="mini_label">{{job.machine_type}}</td>
-                        <td class="mini_label" style="display:none">{{job.machine_os}}</td>
                         <td class="mini_label">{{job.machine_zone}}</td>
+                        <td class="mini_label">{{job.startup_script}}</td>
                         <td class="mini_label">{{job.after_run}}</td>
                         <td class="mini_label">{{job.cron_schedule}}</td>
                         <td class="mini_label">{{job.max_running_time}}</td>
+                        <td class="mini_label">{{job.run_unit_cost}}</td>
                         <td class="mini_label">{{job.created_at}}</td>
                         <td class="mini_label">{{job.updated_at}}</td>
                         <td class="mini_label">{{job.last_run_at}}</td>
@@ -118,7 +115,7 @@
                         <td class="mini_label">
                             <form  method="post" action="{{ url_for('stop_job') }}" accept-charset="UTF-8">
                                 <input  name="job_name" value="{{job.job_name}}" type ="hidden">
-                                <input class="button button-purple inline-block"type="submit" value="Stop">
+                                <button class="button btn stop button-purple inline-block"type="submit" value="Stop">
                             </form>
                         </td>
                         {% endif %}
@@ -127,7 +124,7 @@
                         <td class="mini_label">
                             <form  method="post" action="{{ url_for('run_job') }}" accept-charset="UTF-8">
                                 <input  name="job_name" value="{{job.job_name}}" type ="hidden">
-                                <input class="button button-green inline-block"type="submit" value="Run">
+                                <button class="button btn run button-green inline-block"type="submit" value="Run"/>
                             </form>
                         </td>
                         {% endif %}
@@ -135,13 +132,13 @@
                         <td class="mini_label">
                             <form  method="post" action="{{ url_for('update_job') }}" accept-charset="UTF-8">
                                 <input  name="job_name" value="{{job.job_name}}" type ="hidden">
-                                <input class="button button-blue inline-block"type="submit" value="Modify">
+                                <button class="button btn modify button-blue inline-block"type="submit" value="Modify"/>
                             </form>
                         </td>
                         <td class="mini_label">
                             <form  method="post" action="{{ url_for('delete_job') }}" accept-charset="UTF-8">
                                 <input  name="job_name" value="{{job.job_name}}" type ="hidden">
-                                <input class="button button-red inline-block"type="submit" value="Delete">
+                                <button class="button btn delete button-red inline-block"type="submit" value="Delete"/>
                             </form>
                         </td>
                     </tr>

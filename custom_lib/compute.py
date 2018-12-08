@@ -160,6 +160,10 @@ class instance():
                 # Create job by starting instance
                 # By starting up instance, startup script will do the job
                 new_instance_running = self.start(machine_name, project_id, machine_zone)
+
+                if new_instance_running:
+                    # Update Datastore
+                    self.update_datastore_running_job(job)
         else:
             # If instance not exist create new one
 
@@ -174,9 +178,9 @@ class instance():
                 new_instance_running = self.create(project_id,machine_name,startup_script,machine_zone,
                                                    os_project, machine_os, machine_type)
 
-        if new_instance_running:
-            # Update Datastore
-            self.update_datastore_running_job(job)
+            if new_instance_running:
+                # Update Datastore
+                self.update_datastore_running_job(job)
 
 
     # Stop job
@@ -200,11 +204,15 @@ class instance():
         last_run = job.last_run
 
         if self.exist(machine_name, project_id):
-            self.stop(machine_name, project_id, machine_zone)
+
+            if after_run =="stop":
+                self.stop(machine_name, project_id, machine_zone)
+            if after_run =="delete":
+                self.delete(machine_name, project_id, machine_zone)
 
         current_status = self.status_of(machine_name, project_id)
 
-        if current_status == "TERMINATED":
+        if current_status == "TERMINATED" or current_status ==None:
             # Update Datastore
             self.update_datastore_stopping_job(job)
 

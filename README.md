@@ -1,4 +1,7 @@
 # tiny-gae-gce-scheduler-skeleton
+
+Warning: This is an POC wich will be ameliorate
+
 T2GSK is a tiny GAE scheduler with purpose to reduce cost of scheduling jobs in GCP.
 
 T2GSK is based on Google App Engine (GAE), Google Datastore (GD) and Google Compute Engine (GCE).

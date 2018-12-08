@@ -57,12 +57,12 @@ select {
 .button {
     background-color: #eee;
     background-image: linear-gradient(#fff, #eee);
-    border: 1px solid #bbb;
+    //border: 1px solid #bbb;
     border-radius: 4px;
     box-sizing: border-box;
     color: #777;
     cursor: pointer;
-    display: inline-block;
+    //display: inline-block;
     font-size: 14px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -202,6 +202,7 @@ main {
 }
 .header-desktop {
     height: 100%;
+    background-color: #1a73e8;
 }
 header {
     -webkit-font-smoothing: antialiased;
@@ -237,11 +238,11 @@ header, main, footer, #content, #breadcrumbs {
     text-decoration: underline;
 }
 .selected_menu {
-    color:#2771e8;
+    color:#fff;
     text-transform: uppercase;
 }
 .simple_menu{
-    color: #575353;
+    color: #fff;
     text-transform: uppercase;
 }
 footer {
@@ -340,6 +341,7 @@ thead {
     height: 48px;
     padding: 8px;
     vertical-align: middle;
+    text-align: center;
 }
 
 #container-full table tbody td {
@@ -354,6 +356,7 @@ h1 {
     width:20px;
     height:20px;
     border-radius: 50px;
+    margin: auto;
 }
 .standby{
     background: #a7b5cb;
@@ -384,4 +387,34 @@ h1 {
     background: #4285F4;
     border:1px solid #238dbd;
     box-shadow: 0 1px 6px rgba(0,0,0,0.3);
+}
+button.btn.delete::before {
+  font-family: Material Icons;
+  content: '\e872';
+  font-size: 25px;
+}
+button.btn.modify::before {
+  font-family: Material Icons;
+  content: '\e3c9';
+  font-size: 25px;
+}
+button.btn.run::before {
+  font-family: Material Icons;
+  content: '\e037';
+  font-size: 25px;
+}
+button.btn.stop::before {
+  font-family: Material Icons;
+  content: '\e047';
+  font-size: 25px;
+}
+button.btn.validate::before {
+  font-family: Material Icons;
+  content: '\e065';
+  font-size: 25px;
+}
+button.btn.add::before {
+  font-family: Material Icons;
+  content: '\e03b';
+  font-size: 25px;
 }
