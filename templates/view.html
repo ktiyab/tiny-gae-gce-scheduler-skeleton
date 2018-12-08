@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tiny GCP Scheduler</title>
+    <link href="//fonts.googleapis.com/css?family=Roboto:400,500|Inconsolata:400,700|Roboto Mono:400" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+<body>
+    <header class="">
+      <div class="header-desktop">
+          <div class="inner">
+              <nav class="header-nav">
+                <a id="nav-create" class="selected_menu" href="{{ url_for('form_job') }}">Create job</a>
+                <a id="nav-list" class="simple_menu" href="{{ url_for('list_job') }}">List job</a>
+              </nav>
+          </div>
+      </div>
+    </header>
+    <main>
+        <div id="container">
+        <div class="headline center">
+          <h1>Tiny GCP Scheduler</h1>
+            <p class="description"><b>Job information</b></p>
+        </div>
+         <table>
+            <tbody>
+                <tr>
+                    <td class="label">Job name</td><td>{{job_name}}</td>
+                </tr>
+                <tr>
+                    <td class="label">Emails recipient</td><td>{{emails}}</td>
+                </tr>
+                <tr>
+                    <td class="label">GCP project Id</td><td>{{project_id}}</td>
+                </tr>
+                <tr>
+                    <td class="label">GCP bucket Id</td><td>{{bucket_id}}</td>
+                </tr>
+                <tr>
+                    <td class="label">GCE machine ame</td><td>{{machine_name}}</td>
+                </tr>
+                <tr>
+                    <td class="label">GCE startup script</td><td>{{startup_script}}</td>
+                </tr>
+                <tr>
+                    <td class="label">GCE machine type</td><td>{{machine_type}}</td>
+                </tr>
+                <tr>
+                    <td class="label">GCE machine OS</td><td>{{machine_os}}</td>
+                </tr>
+                 <tr>
+                    <td class="label">GCE machine zone</td><td>{{machine_zone}}</td>
+                </tr>
+                 <tr>
+                    <td class="label">After run</td><td>{{after_run}}</td>
+                </tr>
+                <tr>
+                    <td class="label">Cron scheduler</td><td>{{cron_schedule}}</td>
+                </tr>
+                <tr>
+                    <td class="label">Maximum running time</td><td>{{max_running_time}}</td>
+                </tr>
+            </tbody>
+         </table>
+        </div>
+    </main>
+    <footer>
+      <div class="inner">
+      </div>
+    </footer>
+</body>
+</html>

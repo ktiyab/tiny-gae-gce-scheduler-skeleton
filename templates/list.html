@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tiny GCP Scheduler</title>
+    <link href="//fonts.googleapis.com/css?family=Roboto:400,500|Inconsolata:400,700|Roboto Mono:400" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+<body>
+    <header class="">
+      <div class="header-desktop">
+          <div class="inner">
+              <nav class="header-nav">
+                <a id="nav-create" class="simple_menu" href="{{ url_for('form_job') }}">Create job</a>
+                <a id="nav-list" class="selected_menu" href="{{ url_for('list_job') }}">List job</a>
+              </nav>
+          </div>
+      </div>
+    </header>
+    <main>
+        <div id="container-full">
+        <div class="headline center">
+          <h1>Tiny GCP Scheduler</h1>
+          <p class="description">Job list</p>
+        </div>
+         <table class="mini-table">
+             <tbody>
+                <tr>
+                    <td>Job stopped</td>
+                    <td>Gce terminated</td>
+                    <td>Gce running</td>
+                    <td>Job failed</td>
+                    <td>Job success</td>
+                    <td>Job running</td>
+                </tr>
+                <tr>
+                    <td><div class="status standby"></div></td>
+                    <td><div class="status standby-gce"></div></td>
+                    <td><div class="status standby-gce-running"></div></td>
+                    <td><div class="status failed"></div></td>
+                    <td><div class="status success"></div></td>
+                    <td><div class="status running"></div></td>
+                </tr>
+             </tbody>
+         </table>
+         <br />
+         <table class="max-table">
+            <thead>
+                <tr>
+                    <th class="mini_label_head">Job name</th>
+                    <th class="mini_label_head" style="display:none">Emails recipient</th>
+                    <th class="mini_label_head">Project</th>
+                    <th class="mini_label_head" style="display:none">Bucket</th>
+                    <th class="mini_label_head">Instance</th>
+                    <th class="mini_label_head" style="display:none">Startup script</th>
+                    <th class="mini_label_head">Type</th>
+                    <th class="mini_label_head" style="display:none">OS</th>
+                    <th class="mini_label_head">Zone</th>
+                    <th class="mini_label_head">After run</th>
+                    <th class="mini_label_head">Cron</th>
+                    <th class="mini_label_head">Max time</th>
+                    <th class="mini_label_head">Created</th>
+                    <th class="mini_label_head">Updated</th>
+                    <th class="mini_label_head">Last run</th>
+                    <th class="mini_label_head">Status</th>
+                    <th class="mini_label_head"></th>
+                    <th class="mini_label_head"></th>
+                    <th class="mini_label_head"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                    <tr>
+                        <td class="mini_label"><a href="{{ url_for('view_job',job_name=job.job_name) }}">{{job.job_name}}</a></td>
+                        <td class="mini_label" style="display:none">{{job.emails}}</td>
+                        <td class="mini_label">{{job.project_id}}</td>
+                        <td class="mini_label" style="display:none">{{job.bucket_id}}</td>
+                        <td class="mini_label">{{job.machine_name}}</td>
+                        <td class="mini_label" style="display:none">{{job.startup_script}}</td>
+                        <td class="mini_label">{{job.machine_type}}</td>
+                        <td class="mini_label" style="display:none">{{job.machine_os}}</td>
+                        <td class="mini_label">{{job.machine_zone}}</td>
+                        <td class="mini_label">{{job.after_run}}</td>
+                        <td class="mini_label">{{job.cron_schedule}}</td>
+                        <td class="mini_label">{{job.max_running_time}}</td>
+                        <td class="mini_label">{{job.created_at}}</td>
+                        <td class="mini_label">{{job.updated_at}}</td>
+                        <td class="mini_label">{{job.last_run_at}}</td>
+                        <td class="mini_label">
+
+                          {% if job.job_status=="standby" %}
+                            <div class="status standby"></div>
+                          {% endif %}
+
+                          {% if job.job_status=="failed" %}
+                            <div class="status failed"></div>
+                          {% endif %}
+
+                          {% if job.job_status=="success" %}
+                            <div class="status success"></div>
+                          {% endif %}
+
+                          {% if job.job_status=="running" %}
+                            <div class="status running"></div>
+                          {% endif %}
+
+                          {% if job.job_status=="standby-gce" %}
+                            <div class="status standby-gce"></div>
+                          {% endif %}
+
+                          {% if job.job_status=="standby-gce-running" %}
+                            <div class="status standby-gce-running"></div>
+                          {% endif %}
+
+                        </td>
+
+                        {% if job.job_status=="running" %}
+                        <td class="mini_label">
+                            <form  method="post" action="{{ url_for('stop_job') }}" accept-charset="UTF-8">
+                                <input  name="job_name" value="{{job.job_name}}" type ="hidden">
+                                <input class="button button-purple inline-block"type="submit" value="Stop">
+                            </form>
+                        </td>
+                        {% endif %}
+
+                        {% if job.job_status!="running" %}
+                        <td class="mini_label">
+                            <form  method="post" action="{{ url_for('run_job') }}" accept-charset="UTF-8">
+                                <input  name="job_name" value="{{job.job_name}}" type ="hidden">
+                                <input class="button button-green inline-block"type="submit" value="Run">
+                            </form>
+                        </td>
+                        {% endif %}
+
+                        <td class="mini_label">
+                            <form  method="post" action="{{ url_for('update_job') }}" accept-charset="UTF-8">
+                                <input  name="job_name" value="{{job.job_name}}" type ="hidden">
+                                <input class="button button-blue inline-block"type="submit" value="Modify">
+                            </form>
+                        </td>
+                        <td class="mini_label">
+                            <form  method="post" action="{{ url_for('delete_job') }}" accept-charset="UTF-8">
+                                <input  name="job_name" value="{{job.job_name}}" type ="hidden">
+                                <input class="button button-red inline-block"type="submit" value="Delete">
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+         </table>
+        </div>
+
+    </main>
+    <footer>
+      <div class="inner">
+      </div>
+    </footer>
+</body>
+
+</body>
+</html>

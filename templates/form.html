@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!-- Inspiration from https://www.getharvest.com/ -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tiny GCP Scheduler</title>
+    <link href="//fonts.googleapis.com/css?family=Roboto:400,500|Inconsolata:400,700|Roboto Mono:400" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+<body>
+    <header class="">
+      <div class="header-desktop">
+          <div class="inner">
+              <nav class="header-nav">
+                <a id="nav-create" class="selected_menu" href="{{ url_for('form_job') }}">Create job</a>
+                <a id="nav-list" class="simple_menu" href="{{ url_for('list_job') }}">List job</a>
+              </nav>
+          </div>
+      </div>
+    </header>
+<main>
+    <div id="container">
+
+        <div class="headline center">
+          <h1>Tiny GCP Scheduler</h1>
+          <p class="description">Scheduling your tasks by creating and stopping on fly new instances
+              of <b>Compute engine</b> using tiny instance of <b>Google App Engine</b> and
+              <b>Cloud datastore</b>
+          </p>
+        </div>
+        <div class="alertDialog {{alert_type}}">
+            <p class="alertMessage">{{alert_message}}</p>
+        </div>
+        <form method="post" action="{{ url_for('submit_job') }}" accept-charset="UTF-8">
+            <input type ="hidden" name="operation_type"  value="{{operation_type}}">
+            <input type ="hidden" name="old_name"  value="{{old_name}}">
+            <input type ="text" name="job_name"  value="{{job_name_value}}" placeholder="Your job name" class="inline-block">
+            <input type ="email" name="emails" value="{{emails_value}}" placeholder="Notifications emails list separated by comma" class="inline-block">
+            <input type ="text" name="project_id" value="{{project_id_value}}"  placeholder="Google Cloud Project id" class="inline-block">
+            <input type ="text" name="bucket_id" value="{{bucket_id_value}}" placeholder="Google Cloud Storage working bucket id" class="inline-block">
+            <input type ="text" name="machine_name" value="{{machine_name_value}}" placeholder="Google Compute Engine to create name" class="inline-block">
+             <input type ="text" name="startup_script" value="{{startup_script_value}}" placeholder="Script to run on machine launching" class="inline-block">
+            <select name="machine_type">
+                <option value="{{machine_type_value}}">Select your GCE machine type </option>
+                <option value="g1-small">g1-small</option>
+                <option value="n1-highcpu-8">n1-highcpu-8</option>
+                <option value="n1-highmem-2">n1-highmem-2</option>
+            </select>
+            <select name="machine_os">
+                <option value="{{machine_os_value}}">Select your GCE machine OS </option>
+                <option value="ubuntu-1604-xenial-v20181204">ubuntu-1604-xenial-v20181204</option>
+                <option value="ubuntu-minimal-1604-xenial-v20181203">ubuntu-minimal-1604-xenial-v20181203</option>
+            </select>
+            <select name="machine_zone">
+                <option value="{{machine_zone_value}}">Select your GCE machine zone </option>
+                <option value="europe-west1-b">europe-west1-b</option>
+                <option value="asia-east1-b">asia-east1-b</option>
+                <option value="us-west2-b">us-west2-b</option>
+            </select>
+            <select name="after_run">
+                <option value="{{after_run_value}}">Stop or delete machine after run (Default delete) </option>
+                <option value="stop">stop</option>>
+            </select>
+            <input  name="cron_schedule" value="{{cron_schedule_value}}" type ="text" placeholder="Valid crontab values" class="inline-block">
+            <input  name="max_running_time" value="{{max_running_time_value}}" type ="text" placeholder="Maximum running time in minutes" class="inline-block">
+
+
+            <input class="button button-primary inline-block"
+                   type="submit" value="{{operation}}">
+        </form>
+    </div>
+</main>
+<footer>
+  <div class="inner">
+  </div>
+</footer>
+</body>
+</html>

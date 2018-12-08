@@ -1,0 +1,13 @@
+{
+  "emails":"{{emails}}",
+  "project_id":"{{project_id}}",
+  "bucket_id":"{{bucket_id}}",
+  "machine_name":"{{machine_name}}",
+  "startup_script":"{{startup_script}}",
+  "machine_type":"{{machine_type}}",
+  "machine_zone":"{{machine_zone}}",
+  "machine_os":"{{machine_os}}",
+  "cron_schedule":"{{cron_schedule}}",
+  "max_running_time":"{{max_running_time}}",
+  "job_name ":"{{ job_name}}"
+}
