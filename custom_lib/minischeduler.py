@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 import time
 from compute import instance
 from .model import job as jobmodel
+import logging
 
 JOB_RUNNING_STATUS = "running"
 MIN_TIME_TO_RUN = 1
@@ -20,6 +21,10 @@ JOB_DEFAULT_STATUS="standby"
 SLEEP_TIME_AFTER_DATASTORE_OP = 1
 STOP_AFTER_RUN_VALUE="stop"
 DELETE_AFTER_RUN_VALUE="delete"
+
+GCE_TERMINATED_STATUS = "TERMINATED"
+GCE_RUNNING_STATUS    = "RUNNING"
+
 
 # More minute add to wait before stopping or deleting instance
 MAX_GRACE_MIN = 5
@@ -109,30 +114,20 @@ class utils():
     """
         jobs: list of jobs
         job_model: job datastore model entity
-        override: launch job even if it's not the time
     """
-    def run(self, job_name, override):
+    def run(self, job_name):
 
         jobs = self.get_job_by_name(job_name)
-
-        # Convert cron to readable before listing values
         for job in jobs:
 
             project_id = job.project_id
-            cron_schedule = job.cron_schedule
             job_status = job.job_status
 
-            nextRunTime = self.cron_next_run(cron_schedule)
-            roundedDownTime = self.roundDownTime()
-
-            # If it's time to run or we force run
-            if roundedDownTime == nextRunTime or override:
-
-                # Check if job is already running
-                if job_status != JOB_RUNNING_STATUS:
-                    # Run job by initializing new client
-                    new_instance = instance(project_id)
-                    new_instance.run_job(job)
+            # Check if job is already running
+            if job_status != JOB_RUNNING_STATUS:
+                # Run job by initializing new client
+                new_instance = instance(project_id)
+                new_instance.run_job(job)
 
     """
         Watch jobs and find wich ones must be launch in MIN_TIME_TO_RUN
@@ -141,8 +136,6 @@ class utils():
     # Loop jobs and create queue of jobs to stop and job to run
 
     def overwatch(self):
-
-        print(">>>>>>>>> Minischeduler.overwatch")
 
         jobs = self.get_job_list()
 
@@ -198,12 +191,48 @@ class utils():
             min_before = self.min_before_next_run(cron_schedule)
             print(">>>>> Min before "+str(min_before))
 
-            # Add new job to the jobs queue
+            # Add new job to the jobs queue -- Min time to run is the latence between processing and effectif run
             if min_before <= MIN_TIME_TO_RUN:
                 self.create_queue(self, project_id, machine_name, machine_zone, after_run, max_running_time, job_name)
 
         # After creating queue, run queue
+        self.run_job_queue()
 
+
+    def run_job_queue(self):
+
+        queues = self.get_queue_list()
+
+        for queue in queues:
+            machine_name=queue.machine_name
+            machine_zone=queue.machine_zone
+            project_id=queue.project_id
+            after_run = queue.after_run
+            job_name = queue.job_name
+
+            # Restart instance if instance has been stopped
+            if after_run == STOP_AFTER_RUN_VALUE:
+
+                #Check if instance exist
+                new_instance = instance(project_id)
+                status_of_instance = new_instance.status_of(machine_name, project_id)
+
+                if status_of_instance == GCE_TERMINATED_STATUS:
+                    new_instance.start(machine_name, project_id, machine_zone)
+
+                # TODO: Warning we must act to alert user -- but maybe user start job manually
+                if status_of_instance==GCE_RUNNING_STATUS:
+                    logging.info("Trying to start GCE engine already running")
+
+            # Delete instance if instance must be deleted
+            if after_run == DELETE_AFTER_RUN_VALUE:
+                #Check if instance exist
+                new_instance = instance(project_id)
+                status_of_instance = new_instance.status_of(machine_name, project_id)
+
+                if status_of_instance == None:
+                    # Run job
+                    self.run(job_name)
 
 
 

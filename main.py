@@ -329,7 +329,7 @@ def run_job():
     logging.info("Run run_job at > %s" % time.strftime("%c"))
     job_name = request.form['job_name']
 
-    app_utils.run(job_name, True)
+    app_utils.run(job_name)
 
     # Redirect to list
     return redirect(url_for('list_job'))
