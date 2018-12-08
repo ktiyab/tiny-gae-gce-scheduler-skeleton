@@ -11,7 +11,7 @@ import time
 from model import job as jobmodel
 
 JSON_KEY_FOLDER = "./credentials/"
-SLEEP_TIME_AFTER_GCE_OP = 30
+SLEEP_TIME_AFTER_GCE_OP = 5
 
 images_config = [
     {
@@ -21,6 +21,10 @@ images_config = [
 ]
 
 class instance():
+
+    GCE_TERMINATED_STATUS = "TERMINATED"
+    GCE_RUNNING_STATUS = "RUNNING"
+    GCE_STOPPING_STATUS = "STOPPING"
 
     def __init__(self, project_id):
         self.project_id =project_id
@@ -68,8 +72,8 @@ class instance():
             #startup_script_path= SCRIPT_FOLDER + startup_scrip_name
             self.gce_client.create_instance(project, instance_name, startup_script_path,
                                             bucket_id, zone, image_project, image_name,type_machine)
-
             time.sleep(SLEEP_TIME_AFTER_GCE_OP)
+
             #Check if machine is created
             if self.exist(instance_name, project):
                 return True
@@ -87,8 +91,8 @@ class instance():
             if current_status != "STOPPING" and \
                 current_status != "TERMINATED":
                     self.gce_client.stop_instance(project, instance_name, zone)
+                    time.sleep(SLEEP_TIME_AFTER_GCE_OP)
 
-            time.sleep(SLEEP_TIME_AFTER_GCE_OP)
             #Check is instance is stopped correctly
             if self.status_of(instance_name, project) == "TERMINATED":
                 return True
@@ -105,8 +109,8 @@ class instance():
             current_status = self.status_of(instance_name, project)
             if current_status == "TERMINATED":
                 self.gce_client.start_instance(project, instance_name, zone)
+                time.sleep(SLEEP_TIME_AFTER_GCE_OP)
 
-            time.sleep(SLEEP_TIME_AFTER_GCE_OP)
             # Check is instance is stopped correctly
             if self.status_of(instance_name, project) == "RUNNING":
                 return True
@@ -120,8 +124,8 @@ class instance():
 
         if self.exist(instance_name, project):
             self.gce_client.delete_instance(project, instance_name, zone)
-
             time.sleep(SLEEP_TIME_AFTER_GCE_OP)
+
             # Check is instance is removed correctly
             if not self.exist(instance_name, project):
                 return True
@@ -181,8 +185,8 @@ class instance():
             if not os_project is None:
                 new_instance_running = self.create(project_id,machine_name,startup_script,bucket_id,
                                        machine_zone, os_project, machine_os, machine_type)
+                time.sleep(SLEEP_TIME_AFTER_GCE_OP)
 
-            time.sleep(SLEEP_TIME_AFTER_GCE_OP)
             if new_instance_running:
                 # Update Datastore
                 self.update_datastore_running_job(job)
@@ -215,11 +219,13 @@ class instance():
             if after_run =="delete":
                 self.delete(machine_name, project_id, machine_zone)
 
+            time.sleep(SLEEP_TIME_AFTER_GCE_OP)
+
         current_status = self.status_of(machine_name, project_id)
 
-        time.sleep(SLEEP_TIME_AFTER_GCE_OP)
-
-        if current_status == "TERMINATED" or current_status ==None:
+        if current_status == self.GCE_STOPPING_STATUS or \
+                current_status == self.GCE_TERMINATED_STATUS \
+                or current_status ==None:
             # Update Datastore
             self.update_datastore_stopping_job(job)
 
