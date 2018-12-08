@@ -128,6 +128,10 @@ class utils():
                 # Run job by initializing new client
                 new_instance = instance(project_id)
                 new_instance.run_job(job)
+                last_run = datetime.datetime.utcnow()
+                self.update_job(job.job_name, job.emails, job.project_id, job.bucket_id, job.machine_type,
+                                job.machine_name, job.startup_script, job.machine_zone, job.after_run,
+                                job.machine_os, job.cron_schedule, job.max_running_time, job_name, last_run)
 
     """
         Watch jobs and find wich ones must be launch in MIN_TIME_TO_RUN
@@ -354,7 +358,7 @@ class utils():
 
     def update_job(self,job_to_update_name,emails, project_id, bucket_id, machine_type,
                    machine_name, startup_script, machine_zone, after_run,
-                   machine_os, cron_schedule, max_running_time, job_name):
+                   machine_os, cron_schedule, max_running_time, job_name, last_run):
 
         existing_job = self.get_job_by_name(job_to_update_name)
 
@@ -373,11 +377,14 @@ class utils():
             new_job.max_running_time = max_running_time
             new_job.job_name = job_name
             new_job.job_status = JOB_DEFAULT_STATUS
+            new_job.last_run=last_run
             new_job.put()
 
             return True
 
         return False
+
+
 
     ###################
     ## QUEUE

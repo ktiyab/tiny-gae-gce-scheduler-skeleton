@@ -247,9 +247,10 @@ def create_job():
     else:
 
         # Check if job exist
+        last_run=None
         result = app_utils.update_job(job_name,emails, project_id, bucket_id, machine_type,
                    machine_name, startup_script, machine_zone, after_run,
-                   machine_os, cron_schedule, max_running_time, job_name)
+                   machine_os, cron_schedule, max_running_time, job_name, last_run)
 
         if not result:
             logging.info("Unable to update job " + old_name + ", job not found ...")
