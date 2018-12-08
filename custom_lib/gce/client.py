@@ -188,7 +188,8 @@ class ComputeEngineClient(object):
     def create_instance(self,
                         project_id,
                         machine_name,
-                        startup_scrip_name,
+                        gcs_startup_script,
+                        bucket_id,
                         zone=GCE_DEFAULT_ZONE,
                         image_project=GCE_DEFAULT_IMAGE_PROJECT,
                         image_name=GCE_DEFAULT_IMAGE_NAME,
@@ -204,7 +205,7 @@ class ComputeEngineClient(object):
         #gcloud compute machine-types list
         machine_type = "zones/%s/machineTypes/%s" % (zone, type_machine)
 
-        startup_script = open(startup_scrip_name, 'r').read()
+        #startup_script = open(startup_scrip_name, 'r').read()
 
         config = {
             'name': machine_name,
@@ -243,13 +244,13 @@ class ComputeEngineClient(object):
                     # Startup script is automatically executed by the
                     # instance upon startup.
                     'key': 'startup-script-url',
-                    'value': startup_script
+                    'value': gcs_startup_script
                 },
                 {
                     # Every project has a default Cloud Storage bucket that's
                     # the same name as the project.
                     'key': 'bucket',
-                    'value': project_id
+                    'value': bucket_id
                 }]
             }
         }

@@ -20,7 +20,8 @@ import decimal
 JOB_RUNNING_STATUS = "running"
 MIN_TIME_TO_RUN = 1
 JOB_DEFAULT_STATUS="standby"
-SLEEP_TIME_AFTER_DATASTORE_OP = 1
+SLEEP_TIME_AFTER_DATASTORE_OP = 30
+SLEEP_TIME_AFTER_GCE_OP = 30
 STOP_AFTER_RUN_VALUE="stop"
 DELETE_AFTER_RUN_VALUE="delete"
 
@@ -163,12 +164,18 @@ class utils():
 
             project_id = job.project_id
             job_status = job.job_status
+            machine_name = job.machine_name
 
-            # Check if job is already running
+            new_instance = instance(project_id)
+
+            instance_status= new_instance.status_of(machine_name, project_id)
+
+            # Check if job is set as already running on datastore
+            # and check if on GCE job is running
+            # if job is not set as not running and not running on gcp >> job is not running
             print(">>>>>>>> Run status is "+ job_status)
-            if job_status != JOB_RUNNING_STATUS:
+            if job_status != JOB_RUNNING_STATUS or instance_status!=GCE_RUNNING_STATUS:
                 # Run job by initializing new client
-                new_instance = instance(project_id)
                 new_instance.run_job(job)
                 last_run = datetime.utcnow()
                 self.update_job(job.job_name, job.emails, job.project_id, job.bucket_id, job.machine_type,
@@ -409,11 +416,19 @@ class utils():
 
         job_sup = job[0]
 
+        # Delete job
         job_sup.key.delete()
 
         time.sleep(SLEEP_TIME_AFTER_DATASTORE_OP)
 
         if len(self.get_job_by_name(job[0].job_name)) >0:
+
+            project_id = job.project_id
+            machine_name = job.machine_name
+            machine_zone = job.machine_zone
+            # Check if job instance is running and delete
+            new_instance = instance(project_id)
+            new_instance.delete(machine_name, project_id, machine_zone)
             return True
         else:
             return False
@@ -445,6 +460,8 @@ class utils():
             new_job.last_run=last_run
             new_job.put()
 
+            time.sleep(SLEEP_TIME_AFTER_DATASTORE_OP)
+
             return True
 
         return False
@@ -461,10 +478,13 @@ class utils():
     def create_queue(self, project_id, machine_name, machine_zone, after_run, max_running_time, job_name):
         queue = jobmodel.Queue(project_id=project_id, machine_name=machine_name, machine_zone=machine_zone,
                                after_run=after_run, max_running_time=max_running_time, job_name=job_name)
+
         queue.put()
+        time.sleep(SLEEP_TIME_AFTER_DATASTORE_OP)
 
     def delete_queue(self, queue):
         queue.key.delete()
+        time.sleep(SLEEP_TIME_AFTER_DATASTORE_OP)
 
 
     def queue_update_job(self, job_name):
@@ -488,6 +508,7 @@ class utils():
             new_job.job_status = JOB_DEFAULT_STATUS
             new_job.last_run=new_job.last_run
             new_job.put()
+            time.sleep(SLEEP_TIME_AFTER_DATASTORE_OP)
 
             return True
 

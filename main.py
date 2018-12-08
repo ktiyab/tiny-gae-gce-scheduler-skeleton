@@ -13,10 +13,7 @@ import time
 
 
 app = Flask(__name__)
-
 app_utils = minischeduler.utils()
-
-SLEEP_TIME_AFTER_DATASTORE_OP = 1
 
 # Home page
 @app.route('/')
@@ -334,8 +331,6 @@ def create_job():
         if not result:
             logging.info("Unable to update job " + old_name + ", job not found ...")
 
-        time.sleep(SLEEP_TIME_AFTER_DATASTORE_OP)
-
         return redirect(url_for('list_job'))
 
 
@@ -390,13 +385,6 @@ def delete_job():
         logging.info("Job is running, stopping GCE instance ....")
 
     #Delete job
-    """
-    old_job = my_job[0]
-
-    old_job.key.delete()
-
-    time.sleep(SLEEP_TIME_AFTER_DATASTORE_OP)
-    """
     result = app_utils.delete_job(job)
     #TODO: what tot do if job is not deleted
     # Redirect to list
