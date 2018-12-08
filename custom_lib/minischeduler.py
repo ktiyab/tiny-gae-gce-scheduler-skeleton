@@ -1,3 +1,11 @@
+"""
+Copyright Tiyab KONLAMBIGUE
+
+Licensed under the BSD 3-Clause "New" or "Revised" license;
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at : https://opensource.org/licenses/BSD-3-Clause
+"""
+
 import re
 from cron_descriptor import ExpressionDescriptor
 from croniter import croniter
