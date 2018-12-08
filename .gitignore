@@ -1,7 +1,8 @@
 TODO.txt
 startup_script/*
 credentials/*
+lib/*
 !startup_script/.gitkeep
 !credentials/.gitkeep
-lib/*
+!lib/.gitkeep
 *.pyc
