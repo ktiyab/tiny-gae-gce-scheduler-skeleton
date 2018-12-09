@@ -87,9 +87,7 @@ This command will install required librairies on lib folder.
 
 ### 3 - Run app engine locally and test
 
-#### Run Google App Engine locally
-
-##### Install Google Cloud SDK and toos
+##### Install Google Cloud SDK and tools
 
 To run GAE on local for tests purpose you must install some Google Cloud Packages by executing command below:
 
