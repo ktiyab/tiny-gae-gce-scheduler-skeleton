@@ -242,8 +242,6 @@ def list_job():
 
             formated_jobs.append(job_entity)
 
-            #print(formated_jobs)
-
     if len(jobs)>0:
         return render_template('list.html', jobs=formated_jobs)
     else:
@@ -277,14 +275,9 @@ def create_job():
 
         existing_job=app_utils.get_job_by_name(job_name)
 
-        print(existing_job)
-        print(len(existing_job))
-
         logging.info("create_job: Saving new job "+request.form['job_name']+" to datastore ...")
 
         is_valid_conf = app_utils.is_job_config_valid(emails, cron_schedule, max_running_time)
-
-        print( is_valid_conf )
 
         # If job exist redirect user to update job page with alert
         if len(existing_job) > 0 or is_valid_conf!="":
