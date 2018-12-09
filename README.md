@@ -51,7 +51,7 @@ You can execute command bellow in the root folder to run the web app:
 $ dev_appserver.py app.yaml 
 ```
 
-In dev mode, local crontab doesn't you can run the local_dev_cron.py to simulate local crontab for test purpose.
+In dev mode, local crontab doesn't work, you can run the local_dev_cron.py to simulate local crontab for test purpose.
 
 
 
