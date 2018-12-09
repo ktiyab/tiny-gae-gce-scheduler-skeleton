@@ -10,7 +10,7 @@ For now some of solutions given by Google on GCP can be expensive or are not opt
 
 At December 2018, below are the free usage limits of GCP services included in TGJS
 
-####App Engine free usage limits
+#### App Engine free usage limits
 
 - 28 frontend instance hours per day, 9 backend instance hours per day
 - 5 GB Cloud Storage
@@ -20,12 +20,12 @@ At December 2018, below are the free usage limits of GCP services included in TG
 - 100 emails per day
 - The free tier is available only for the Standard Environment.
 
-####Cloud Datastore
+#### Cloud Datastore
 
 - 1 GB storage
 - 50,000 reads, 20,000 writes, 20,000 deletes
 
-####Compute Engine
+#### Compute Engine
 
 - 1 non-preemptible f1-micro VM instance per month in one of the following US regions:
     - Oregon: us-west1
@@ -36,7 +36,7 @@ At December 2018, below are the free usage limits of GCP services included in TG
 
 Your Always Free f1-micro instance limit is by time, not by instance. Eligible use of all of your f1-micro instances each month is free until you have used a number of hours equal to the total hours in the current month.Usage calculations are combined across the supported regions.
 
-####Cloud Storage
+#### Cloud Storage
 
 - 5 GB-months of Regional Storage (US regions only)
 - 5000 Class A Operations per month
@@ -45,7 +45,7 @@ Your Always Free f1-micro instance limit is by time, not by instance. Eligible u
 
 Always Free only available in us-east1, us-west1, and us-central1 regions. Usage calculations are combined across those regions.
 
-####For intensive jobs 
+#### For intensive jobs 
 
 You can use this tool if you want to run a quick job on Google Compute Engine by scheduleding it. But for extensive use of Compute Engine even if this tool can be natively configured to support heavy jobs that can increase your billt, this solution may not be the best choice than other solutions provided natively by Google, you can use the cloud architectures proposed by Google to manage that kind of job. Some example below:
 - Reliable Task Scheduling on Google Compute Engine: https://cloud.google.com/solutions/reliable-task-scheduling-compute-engine
