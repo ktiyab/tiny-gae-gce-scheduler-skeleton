@@ -20,8 +20,8 @@ import decimal
 JOB_RUNNING_STATUS = "running"
 MIN_TIME_TO_RUN = 1
 JOB_DEFAULT_STATUS="standby"
-SLEEP_TIME_AFTER_DATASTORE_OP = 30
-SLEEP_TIME_AFTER_GCE_OP = 30
+SLEEP_TIME_AFTER_DATASTORE_OP = 2
+SLEEP_TIME_AFTER_GCE_OP = 2
 STOP_AFTER_RUN_VALUE="stop"
 DELETE_AFTER_RUN_VALUE="delete"
 
@@ -57,6 +57,7 @@ MAX_GRACE_MIN = 5
             bucket_id = job.bucket_id
             machine_name = job.machine_name
             startup_script = job.startup_script
+            shutdown_script = job.shutdown_script
             machine_type = job.machine_type
             machine_zone = job.machine_zone
             machine_os = job.machine_os
@@ -180,7 +181,7 @@ class utils():
                 new_instance.run_job(job)
                 last_run = datetime.utcnow()
                 self.update_job(job.job_name, job.emails, job.project_id, job.bucket_id, job.machine_type,
-                                job.machine_name, job.startup_script, job.machine_zone, job.after_run,
+                                job.machine_name, job.startup_script, job.shutdown_script, job.machine_zone, job.after_run,
                                 job.machine_os, job.cron_schedule, job.max_running_time, job_name, last_run, JOB_RUNNING_STATUS)
 
     """
@@ -393,14 +394,14 @@ class utils():
         return jobmodel.Job().get(my_filter)
 
     def create_job(self, emails, project_id, bucket_id, machine_type,
-                   machine_name, startup_script, machine_zone, after_run,
+                   machine_name, startup_script, shutdown_script, machine_zone, after_run,
                    machine_os, cron_schedule, max_running_time, job_name):
 
         new_job = jobmodel.Job(emails=emails, project_id=project_id, bucket_id=bucket_id,
                           machine_name=self.valid_instance_name(machine_name), startup_script=startup_script,
-                          machine_type=machine_type, machine_zone=machine_zone, after_run=after_run,
-                          machine_os=machine_os,cron_schedule=cron_schedule, max_running_time=max_running_time,
-                          job_name=job_name,job_status=JOB_DEFAULT_STATUS)
+                          shutdown_script=shutdown_script,machine_type=machine_type, machine_zone=machine_zone,
+                          after_run=after_run,machine_os=machine_os,cron_schedule=cron_schedule,
+                          max_running_time=max_running_time,job_name=job_name,job_status=JOB_DEFAULT_STATUS)
 
         new_job.put()
 
@@ -435,7 +436,7 @@ class utils():
             return False
 
     def update_job(self,job_to_update_name,emails, project_id, bucket_id, machine_type,
-                   machine_name, startup_script, machine_zone, after_run,
+                   machine_name, startup_script, shutdown_script, machine_zone, after_run,
                    machine_os, cron_schedule, max_running_time, job_name, last_run, status=None):
 
         if status == None:
@@ -450,6 +451,7 @@ class utils():
             new_job.bucket_id = bucket_id
             new_job.machine_name = self.valid_instance_name(machine_name)
             new_job.startup_script = startup_script
+            new_job.shutdown_script = shutdown_script
             new_job.machine_type = machine_type
             new_job.machine_zone = machine_zone
             new_job.after_run = after_run
@@ -499,6 +501,7 @@ class utils():
             new_job.bucket_id = new_job.bucket_id
             new_job.machine_name = self.valid_instance_name(new_job.machine_name)
             new_job.startup_script = new_job.startup_script
+            new_job.shutdown_script = new_job.shutdown_script
             new_job.machine_type = new_job.machine_type
             new_job.machine_zone = new_job.machine_zone
             new_job.after_run = new_job.after_run

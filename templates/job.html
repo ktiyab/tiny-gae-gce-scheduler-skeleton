@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tiny GCP Scheduler</title>
+    <title>Tiny GCP Job Scheduler</title>
     <link href="//fonts.googleapis.com/css?family=Roboto:400,500|Inconsolata:400,700|Roboto Mono:400" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" type="text/css" href="/static/style.css">
@@ -21,7 +21,7 @@
     <main>
         <div id="container">
         <div class="headline center">
-          <h1>Tiny GCP Scheduler</h1>
+          <h1>Tiny GCP Job Scheduler</h1>
             <p class="description"><b>Please review your configuration</b></p>
         </div>
          <table>
@@ -43,6 +43,9 @@
                 </tr>
                 <tr>
                     <td class="label">GCE startup script</td><td>{{startup_script}}</td>
+                </tr>
+                <tr>
+                    <td class="label">GCE shutdown script</td><td>{{shutdown_script}}</td>
                 </tr>
                 <tr>
                     <td class="label">GCE machine type</td><td>{{machine_type}}</td>
@@ -73,6 +76,7 @@
             <input name="bucket_id" value="{{bucket_id}}" class="hidden">
             <input name="machine_name" value="{{machine_name}}" class="hidden">
             <input name="startup_script" value="{{startup_script}}" class="hidden">
+            <input name="shutdown_script" value="{{shutdown_script}}" class="hidden">
             <input name="machine_type" value="{{machine_type}}" class="hidden">
             <input name="machine_os" value="{{machine_os}}" class="hidden">
             <input name="machine_zone" value="{{machine_zone}}" class="hidden">

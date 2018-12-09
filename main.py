@@ -30,7 +30,7 @@ def index():
 def form_job():
     logging.info("Run form_job at > %s" % time.strftime("%c"))
     return render_template('form.html',
-       machine_type_value="g1-small",
+       machine_type_value="f1-micro",
        machine_os_value="ubuntu-1604-xenial-v20181204",
        machine_zone_value="europe-west1-b",
        after_run_value="delete",
@@ -42,12 +42,15 @@ def form_job():
 # Submit a job
 @app.route('/submit_job', methods=['POST'])
 def submit_job():
+
     logging.info("Run submit_job at > %s" % time.strftime("%c"))
+
     emails = request.form['emails'].strip()
     project_id = request.form['project_id'].strip()
     bucket_id = request.form['bucket_id'].strip()
     machine_name = request.form['machine_name'].strip()
     startup_script = request.form['startup_script'].strip()
+    shutdown_script = request.form['shutdown_script'].strip()
     machine_type = request.form['machine_type'].strip()
     machine_zone = request.form['machine_zone'].strip()
     after_run= request.form['after_run'].strip()
@@ -68,6 +71,7 @@ def submit_job():
         bucket_id=bucket_id,
         machine_name=machine_name,
         startup_script=startup_script,
+        shutdown_script=shutdown_script,
         machine_type=machine_type,
         machine_zone=machine_zone,
         after_run=after_run,
@@ -100,6 +104,7 @@ def view_job():
             bucket_id=existing_job.bucket_id,
             machine_name=existing_job.machine_name,
             startup_script=existing_job.startup_script,
+            shutdown_script=existing_job.shutdown_script,
             machine_type=existing_job.machine_type,
             machine_zone=existing_job.machine_zone,
             after_run=existing_job.after_run,
@@ -120,6 +125,7 @@ def modify_job_info():
     bucket_id = request.args.get('bucket_id').strip()
     machine_name = request.args.get('machine_name').strip()
     startup_script = request.args.get('startup_script').strip()
+    shutdown_script = request.args.get('shutdown_script').strip()
     machine_type = request.args.get('machine_type').strip()
     machine_zone = request.args.get('machine_zone').strip()
     after_run = request.args.get('after_run').strip()
@@ -139,6 +145,7 @@ def modify_job_info():
         bucket_id_value=bucket_id,
         machine_name_value=machine_name,
         startup_script_value=startup_script,
+        shutdown_script_value = shutdown_script,
         machine_type_value=machine_type,
         machine_zone_value=machine_zone,
         after_run_value=after_run,
@@ -182,7 +189,8 @@ def list_job():
                 "last_run": "",
                 "run_unit_cost": "",
                 "job_status":"",
-                "startup_script": ""
+                "startup_script": "",
+                "shutdown_script": ""
             }
 
             # Get db values
@@ -199,6 +207,7 @@ def list_job():
             job_status = job.job_status
             last_run = job.last_run
             startup_script=job.startup_script
+            shutdown_script = job.shutdown_script
 
             # Create new entity with modified and calculated values
             job_entity['creation']=creation
@@ -211,6 +220,8 @@ def list_job():
             job_entity['job_name'] = job_name
             job_entity['last_run'] = last_run
             job_entity['startup_script'] = startup_script
+            job_entity['shutdown_script'] = shutdown_script
+            job_entity['machine_name'] = machine_name
 
 
             # Readable cron
@@ -248,6 +259,7 @@ def create_job():
     bucket_id = request.form['bucket_id'].strip()
     machine_name = request.form['machine_name'].strip()
     startup_script = request.form['startup_script'].strip()
+    shutdown_script = request.form['shutdown_script'].strip()
     machine_type = request.form['machine_type'].strip()
     machine_zone = request.form['machine_zone'].strip()
     after_run = request.form['after_run'].strip()
@@ -293,16 +305,16 @@ def create_job():
 
                 return redirect(url_for('modify_job_info',emails=emails, project_id=project_id, bucket_id=bucket_id,
                               machine_name=app_utils.valid_instance_name(machine_name), startup_script=startup_script,
-                              machine_type=machine_type,machine_zone=machine_zone, after_run=after_run,machine_os=machine_os,
-                              cron_schedule=cron_schedule,max_running_time=max_running_time, job_name=job_name,
-                             alert_type=alert_type,alert_message=alert_message, operation_type=operation_type,
+                             shutdown_script=shutdown_script,machine_type=machine_type,machine_zone=machine_zone,
+                             after_run=after_run,machine_os=machine_os,cron_schedule=cron_schedule,max_running_time=max_running_time,
+                             job_name=job_name,alert_type=alert_type,alert_message=alert_message, operation_type=operation_type,
                              old_name=old_name))
 
         else:
 
             if is_valid_conf=="":
                 result = app_utils.create_job(emails, project_id, bucket_id, machine_type,
-                       machine_name, startup_script, machine_zone, after_run,
+                       machine_name, startup_script, shutdown_script, machine_zone, after_run,
                        machine_os, cron_schedule, max_running_time, job_name)
             else:
                 alert_type = "errorDialog"
@@ -313,9 +325,9 @@ def create_job():
 
                 return redirect(url_for('modify_job_info',emails=emails, project_id=project_id, bucket_id=bucket_id,
                               machine_name=app_utils.valid_instance_name(machine_name), startup_script=startup_script,
-                              machine_type=machine_type,machine_zone=machine_zone, after_run=after_run,machine_os=machine_os,
-                              cron_schedule=cron_schedule,max_running_time=max_running_time, job_name=job_name,
-                             alert_type=alert_type,alert_message=alert_message, operation_type=operation_type,
+                              shutdown_script=shutdown_script,machine_type=machine_type,machine_zone=machine_zone,
+                              after_run=after_run,machine_os=machine_os,cron_schedule=cron_schedule,max_running_time=max_running_time,
+                              job_name=job_name,alert_type=alert_type,alert_message=alert_message, operation_type=operation_type,
                              old_name=old_name))
 
             #TODO: Operation if insert isn't correct
@@ -325,7 +337,7 @@ def create_job():
         # Check if job exist
         last_run=None
         result = app_utils.update_job(job_name,emails, project_id, bucket_id, machine_type,
-                   machine_name, startup_script, machine_zone, after_run,
+                   machine_name, startup_script, shutdown_script, machine_zone, after_run,
                    machine_os, cron_schedule, max_running_time, job_name, last_run)
 
         if not result:
@@ -357,7 +369,7 @@ def update_job():
 
         return redirect(url_for('modify_job_info', emails=my_job[0].emails, project_id=my_job[0].project_id,
                                 bucket_id=my_job[0].bucket_id,machine_name=app_utils.valid_instance_name(my_job[0].machine_name),
-                                startup_script=my_job[0].startup_script,machine_type=my_job[0].machine_type,
+                                shutdown_script=my_job[0].shutdown_script, startup_script=my_job[0].startup_script,machine_type=my_job[0].machine_type,
                                 machine_zone=my_job[0].machine_zone, after_run=my_job[0].after_run,machine_os=my_job[0].machine_os,
                                 cron_schedule=my_job[0].cron_schedule, max_running_time=my_job[0].max_running_time,
                                 job_name=my_job[0].job_name,alert_type=alert_type, alert_message=alert_message,

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tiny GCP Scheduler</title>
+    <title>Tiny GCP Job Scheduler</title>
     <link rel="stylesheet" type="text/css" href="/static/style.css">
     <link href="//fonts.googleapis.com/css?family=Roboto:400,500|Inconsolata:400,700|Roboto Mono:400" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -23,7 +23,7 @@
     <div id="container">
 
         <div class="headline center">
-          <h1>Tiny GCP Scheduler</h1>
+          <h1>Tiny GCP Job Scheduler</h1>
           <p class="description">Scheduling your tasks by creating and stopping on fly new instances
               of <b>Compute engine</b> using tiny instance of <b>Google App Engine</b> and
               <b>Cloud datastore</b>
@@ -40,7 +40,8 @@
             <input type ="text" name="project_id" value="{{project_id_value}}"  placeholder="Google Cloud Project id" class="inline-block">
             <input type ="text" name="bucket_id" value="{{bucket_id_value}}" placeholder="Google Cloud Storage working bucket id" class="inline-block">
             <input type ="text" name="machine_name" value="{{machine_name_value}}" placeholder="Google Compute Engine to create name" class="inline-block">
-             <input type ="text" name="startup_script" value="{{startup_script_value}}" placeholder="Script to run from GCS on machine launching: gcs://.." class="inline-block">
+            <input type ="text" name="startup_script" value="{{startup_script_value}}" placeholder="Script to run from GCS on machine launching: gcs://.." class="inline-block">
+            <input type ="text" name="shutdown_script" value="{{shutdown_script_value}}" placeholder="Script to run from GCS on machine stopping: gcs://.." class="inline-block">
             <select name="machine_type">
                 <option value="{{machine_type_value}}">Select your GCE machine type </option>
                 <option value="f1-micro">f1-micro</option>
@@ -61,7 +62,8 @@
             </select>
             <select name="after_run">
                 <option value="{{after_run_value}}">Stop or delete machine after run (Default delete) </option>
-                <option value="stop">stop</option>>
+                <option value="stop">stop (you will pay for storage)</option>
+                <option value="delete">delete (remove all, disk also)</option>
             </select>
             <input  name="cron_schedule" value="{{cron_schedule_value}}" type ="text" placeholder="Valid crontab values" class="inline-block">
             <input  name="max_running_time" value="{{max_running_time_value}}" type ="text" placeholder="Maximum running time in minutes" class="inline-block">

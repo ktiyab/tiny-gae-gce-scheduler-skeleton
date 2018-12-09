@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tiny GCP Scheduler</title>
+    <title>Tiny GCP Job Scheduler</title>
     <link rel="stylesheet" type="text/css" href="/static/style.css">
     <link href="//fonts.googleapis.com/css?family=Roboto:400,500|Inconsolata:400,700|Roboto Mono:400" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -21,7 +21,7 @@
     <main>
         <div id="container-full">
         <div class="headline center">
-          <h1>Tiny GCP Scheduler</h1>
+          <h1>Tiny GCP Job Scheduler</h1>
           <p class="description">Job list</p>
         </div>
          <table class="mini-table">
@@ -53,7 +53,8 @@
                     <th class="mini_label_head">Instance</th>
                     <th class="mini_label_head">Type</th>
                     <th class="mini_label_head">Zone</th>
-                    <th class="mini_label_head">Startup-script</th>
+                    <th class="mini_label_head">Startup script</th>
+                    <th class="mini_label_head">Shutdown script</th>
                     <th class="mini_label_head">After run</th>
                     <th class="mini_label_head">Cron</th>
                     <th class="mini_label_head">Max time</th>
@@ -76,6 +77,7 @@
                         <td class="mini_label">{{job.machine_type}}</td>
                         <td class="mini_label">{{job.machine_zone}}</td>
                         <td class="mini_label">{{job.startup_script}}</td>
+                         <td class="mini_label">{{job.shutdown_script}}</td>
                         <td class="mini_label">{{job.after_run}}</td>
                         <td class="mini_label">{{job.cron_schedule}}</td>
                         <td class="mini_label">{{job.max_running_time}}</td>

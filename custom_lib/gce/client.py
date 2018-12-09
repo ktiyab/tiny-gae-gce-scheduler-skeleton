@@ -189,6 +189,7 @@ class ComputeEngineClient(object):
                         project_id,
                         machine_name,
                         gcs_startup_script,
+                        gcs_shutdown_script,
                         bucket_id,
                         zone=GCE_DEFAULT_ZONE,
                         image_project=GCE_DEFAULT_IMAGE_PROJECT,
@@ -204,8 +205,6 @@ class ComputeEngineClient(object):
 
         #gcloud compute machine-types list
         machine_type = "zones/%s/machineTypes/%s" % (zone, type_machine)
-
-        #startup_script = open(startup_scrip_name, 'r').read()
 
         config = {
             'name': machine_name,
@@ -245,6 +244,12 @@ class ComputeEngineClient(object):
                     # instance upon startup.
                     'key': 'startup-script-url',
                     'value': gcs_startup_script
+                },
+                {
+                    # Shutdown script is automatically executed by the
+                    # instance upon shutdown.
+                    'key': 'shutdown-script-url',
+                    'value': gcs_shutdown_script
                 },
                 {
                     # Every project has a default Cloud Storage bucket that's

@@ -16,6 +16,7 @@ class Job(ndb.Model):
     bucket_id        = ndb.StringProperty()
     machine_name     = ndb.StringProperty()
     startup_script   = ndb.StringProperty()
+    shutdown_script  = ndb.StringProperty()
     machine_type     = ndb.StringProperty()
     machine_zone     = ndb.StringProperty()
     machine_os       = ndb.StringProperty()
@@ -59,6 +60,7 @@ class Job(ndb.Model):
             "bucket_id": str(self.bucket_id) if self.bucket_id else None,
             "machine_name": str(self.machine_name) if self.machine_name else None,
             "startup_script": str(self.startup_script) if self.startup_script else None,
+            "shutdown_script": str(self.shutdown_script) if self.shutdown_script else None,
             "machine_type": str(self.machine_type) if self.machine_type else None,
             "machine_zone": str(self.machine_zone) if self.machine_zone else None,
             "machine_os": str(self.machine_os) if self.machine_os else None,
@@ -78,7 +80,6 @@ class Queue(ndb.Model):
     project_id       = ndb.StringProperty()
     bucket_id        = ndb.StringProperty()
     machine_name     = ndb.StringProperty()
-    startup_script   = ndb.StringProperty()
     machine_type     = ndb.StringProperty()
     machine_zone     = ndb.StringProperty()
     machine_os       = ndb.StringProperty()
@@ -116,7 +117,6 @@ class Queue(ndb.Model):
             "project": str(self.project) if self.project else None,
             "bucket_id": str(self.bucket_id) if self.bucket_id else None,
             "machine_name": str(self.machine_name) if self.machine_name else None,
-            "startup_script": str(self.startup_script) if self.startup_script else None,
             "machine_type": str(self.machine_type) if self.machine_type else None,
             "machine_zone": str(self.machine_zone) if self.machine_zone else None,
             "machine_os": str(self.machine_os) if self.machine_os else None,

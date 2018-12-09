@@ -11,7 +11,7 @@ import time
 from model import job as jobmodel
 
 JSON_KEY_FOLDER = "./credentials/"
-SLEEP_TIME_AFTER_GCE_OP = 5
+SLEEP_TIME_AFTER_GCE_OP = 2
 
 images_config = [
     {
@@ -62,7 +62,7 @@ class instance():
 
 
     # Create a new machine if not exist
-    def create(self,project, instance_name, startup_script_path,
+    def create(self,project, instance_name, startup_script_path,shutdown_script_path,
                bucket_id, zone, image_project, image_name,type_machine
                 ):
         logging.info("Run instance create at > %s" % time.strftime("%c"))
@@ -70,7 +70,7 @@ class instance():
         if not self.exist(instance_name, project):
             #Create machine
             #startup_script_path= SCRIPT_FOLDER + startup_scrip_name
-            self.gce_client.create_instance(project, instance_name, startup_script_path,
+            self.gce_client.create_instance(project, instance_name, startup_script_path,shutdown_script_path,
                                             bucket_id, zone, image_project, image_name,type_machine)
             time.sleep(SLEEP_TIME_AFTER_GCE_OP)
 
@@ -149,6 +149,7 @@ class instance():
         bucket_id = job.bucket_id
         machine_name = job.machine_name
         startup_script = job.startup_script
+        shutdown_script = job.shutdown_script
         machine_type = job.machine_type
         machine_zone = job.machine_zone
         machine_os = job.machine_os
@@ -183,8 +184,8 @@ class instance():
 
              # Create instance if we have image project
             if not os_project is None:
-                new_instance_running = self.create(project_id,machine_name,startup_script,bucket_id,
-                                       machine_zone, os_project, machine_os, machine_type)
+                new_instance_running = self.create(project_id,machine_name,startup_script,shutdown_script,
+                                                   bucket_id,machine_zone, os_project, machine_os, machine_type)
                 time.sleep(SLEEP_TIME_AFTER_GCE_OP)
 
             if new_instance_running:
@@ -202,6 +203,7 @@ class instance():
         bucket_id = job.bucket_id
         machine_name = job.machine_name
         startup_script = job.startup_script
+        shutdown_script = job.shutdown_script
         machine_type = job.machine_type
         machine_zone = job.machine_zone
         machine_os = job.machine_os
@@ -250,6 +252,7 @@ class instance():
             old_job.bucket_id = job.bucket_id
             old_job.machine_name = job.machine_name
             old_job.startup_script = job.startup_script
+            old_job.shutdown_script = job.shutdown_script
             old_job.machine_type = job.machine_type
             old_job.machine_zone = job.machine_zone
             old_job.after_run=job.after_run
@@ -280,6 +283,7 @@ class instance():
             old_job.bucket_id = job.bucket_id
             old_job.machine_name = job.machine_name
             old_job.startup_script = job.startup_script
+            old_job.shutdown_script = job.shutdown_script
             old_job.machine_type = job.machine_type
             old_job.machine_zone = job.machine_zone
             old_job.after_run=job.after_run
