@@ -94,7 +94,8 @@ This command will install required librairies on lib folder.
 To run GAE on local for tests purpose you must install some Google Cloud Packages by executing command below:
 
 ```
-$ sudo apt-get update && sudo apt-get install google-cloud-sdk &&  $ sudo apt-get install google-cloud-sdk-app-engine-python google-cloud-sdk-datastore-emulator 
+$ sudo apt-get update && sudo apt-get install google-cloud-sdk
+$ sudo apt-get install google-cloud-sdk-app-engine-python google-cloud-sdk-datastore-emulator 
 ```
 
 ##### Configure Google App Engine YAML files at your convenience
