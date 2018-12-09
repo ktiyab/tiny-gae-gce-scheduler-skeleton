@@ -37,7 +37,8 @@ At December 2018, below are the free usage limits of GCP services included in TG
     - Iowa: us-central1
     - South Carolina: us-east1
 - 30 GB-months HDD, 5 GB-months snapshot
-- 1 GB network egress from North America to all region destinations per month (excluding China and Australia)
+- 1 GB network egress from North America to all region destinations 
+  per month (excluding China and Australia)
 ```
 
 Your Always Free f1-micro instance limit is by time, not by instance. Eligible use of all of your f1-micro instances each month is free until you have used a number of hours equal to the total hours in the current month.Usage calculations are combined across the supported regions.
@@ -48,7 +49,8 @@ Your Always Free f1-micro instance limit is by time, not by instance. Eligible u
 - 5 GB-months of Regional Storage (US regions only)
 - 5000 Class A Operations per month
 - 50000 Class B Operations per month
-- 1 GB network egress from North America to all region destinations per month (excluding China and Australia)
+- 1 GB network egress from North America to all region destinations 
+  per month (excluding China and Australia)
 ```
 
 Always Free only available in us-east1, us-west1, and us-central1 regions. Usage calculations are combined across those regions.
