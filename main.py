@@ -440,5 +440,5 @@ def overwatch():
 def server_error(e):
     # Log the error and stacktrace.
     logging.info("Run server_error at > %s" % time.strftime("%c"))
-    logging.exception('An error occurred during a request.')
-    return 'An internal error occurred.', 500
+    logging.exception('An error occurred during a request. \n' + str(e))
+    return redirect(url_for('list_job'))
