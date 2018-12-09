@@ -12,6 +12,7 @@ At December 2018, below are the free usage limits of GCP services included in TG
 
 #### App Engine free usage limits
 
+```
 - 28 frontend instance hours per day, 9 backend instance hours per day
 - 5 GB Cloud Storage
 - 1 GB of egress per day
@@ -19,29 +20,36 @@ At December 2018, below are the free usage limits of GCP services included in TG
 - 1000 search operations per day, 10 MB search indexing
 - 100 emails per day
 - The free tier is available only for the Standard Environment.
+```
 
 #### Cloud Datastore
 
+```
 - 1 GB storage
 - 50,000 reads, 20,000 writes, 20,000 deletes
+```
 
 #### Compute Engine
 
+```
 - 1 non-preemptible f1-micro VM instance per month in one of the following US regions:
     - Oregon: us-west1
     - Iowa: us-central1
     - South Carolina: us-east1
 - 30 GB-months HDD, 5 GB-months snapshot
 - 1 GB network egress from North America to all region destinations per month (excluding China and Australia)
+```
 
 Your Always Free f1-micro instance limit is by time, not by instance. Eligible use of all of your f1-micro instances each month is free until you have used a number of hours equal to the total hours in the current month.Usage calculations are combined across the supported regions.
 
 #### Cloud Storage
 
+```
 - 5 GB-months of Regional Storage (US regions only)
 - 5000 Class A Operations per month
 - 50000 Class B Operations per month
 - 1 GB network egress from North America to all region destinations per month (excluding China and Australia)
+```
 
 Always Free only available in us-east1, us-west1, and us-central1 regions. Usage calculations are combined across those regions.
 
