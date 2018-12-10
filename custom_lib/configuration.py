@@ -24,7 +24,7 @@ GCE_DEFAULT_FULL_SCOPE=[
 GCE_DEFAULT_ZONE ="europe-west1-b"
 
 # Estimated hourly pricing at 2018/12 https://cloud.google.com/compute/pricing
-GCE_PRINCING = {
+GCE_PRICING = {
     "f1-micro":"0.0076",
     "g1-small":"0.0257",
     "n1-highcpu-8":"0.2836",

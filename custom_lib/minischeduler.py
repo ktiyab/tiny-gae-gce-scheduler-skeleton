@@ -17,8 +17,8 @@ import configuration
 MIN_TIME_TO_RUN = configuration.MIN_TIME_TO_RUN
 SLEEP_TIME_AFTER_DATASTORE_OP = configuration.SLEEP_TIME_AFTER_DATASTORE_OP
 SLEEP_TIME_AFTER_GCE_OP = configuration.SLEEP_TIME_AFTER_GCE_OP
-GCE_PRINCING = configuration.GCE_PRINCING
-GCE_PRINCING_CURRENCY = configuration.GCE_PRINCING_CURRENCY
+GCE_PRICING = configuration.GCE_PRICING
+GCE_PRICING_CURRENCY = configuration.GCE_PRICING_CURRENCY
 MAX_GRACE_MIN = configuration.MAX_GRACE_MIN
 
 GCE_TERMINATED_STATUS = instance.GCE_TERMINATED_STATUS
@@ -287,7 +287,7 @@ class utils():
     """
     def get_estimate_running_cost(self, machine_type, max_run_time):
 
-        hourly_cost  = GCE_PRINCING[machine_type]
+        hourly_cost  = GCE_PRICING[machine_type]
 
         cost = (((int(max_run_time)+MAX_GRACE_MIN) * float(hourly_cost))/ 60)
 
@@ -295,7 +295,7 @@ class utils():
 
     def formated_estimate_running_cost(self, machine_type, max_run_time):
         cost = self.get_estimate_running_cost(machine_type, max_run_time)
-        return str(cost) + GCE_PRINCING_CURRENCY
+        return str(cost) + GCE_PRICING_CURRENCY
 
     """
         Stop GCE instances (and jobs)
