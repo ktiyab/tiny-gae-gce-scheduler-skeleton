@@ -75,9 +75,9 @@ This code skeleton aimed to help you to quickly setup a GCE scheduler for your G
 
 ### 2 - Add your GCP service account and install librairies
 
-Add Google Cloud Service Acount json key file in the credentials folder, the json file must be named as the GCP project related.
+- Add your Google Cloud Service Account json key file in the credentials folder, the json file must be named as the GCP project related.
 
-Install requirement libraries by executing command below:
+- Install requirement libraries by executing the command below:
 
 ```
 $  pip install -t lib -r requirements.txt
@@ -89,7 +89,7 @@ This command will install required librairies on lib folder.
 
 ##### Install Google Cloud SDK and tools
 
-To run GAE on local for tests purpose you must install some Google Cloud Packages by executing command below:
+To run GAE on local for tests purpose you must install some Google Cloud Packages by executing the command below:
 
 ```
 $ sudo apt-get update && sudo apt-get install google-cloud-sdk
@@ -108,7 +108,7 @@ You can execute command bellow in the root folder to run the web app:
 $ dev_appserver.py app.yaml 
 ```
 
-In dev mode, local crontab doesn't work, you can run the local_dev_cron.py to simulate local crontab for test purpose.
+In dev mode, local crontab doesn't work, you can run the script local_dev_cron.py to simulate local crontab for test purpose.
 
 
 
