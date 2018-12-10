@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- Inspiration from https://www.getharvest.com/ -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,6 +11,11 @@
     <header class="">
       <div class="header-desktop">
           <div class="inner">
+              <div class="left-logo">
+                  <a id="logo" aria-label="TinySchedule" href="/">
+                   <img url="/static/tiny_scheduler_icon.png" width="145" height="28"/>
+                  </a>
+                </div>
               <nav class="header-nav">
                 <a id="nav-create" class="selected_menu" href="{{ url_for('form_job') }}">Create job</a>
                 <a id="nav-list" class="simple_menu" href="{{ url_for('list_job') }}">List jobs</a>
@@ -69,7 +73,7 @@
             <input  name="max_running_time" value="{{max_running_time_value}}" type ="text" placeholder="Maximum running time in minutes" class="inline-block">
 
 
-            <button class="button btn add button-primary inline-block" type="submit" value="{{operation}}"/>
+            <input class="button button-primary inline-block" type="submit" value="{{operation}}">
         </form>
     </div>
 </main>

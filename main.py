@@ -329,7 +329,7 @@ def create_job():
 
         # Check if job exist
         last_run=None
-        result = app_utils.update_job(job_name,emails, project_id, bucket_id, machine_type,
+        result = app_utils.update_job(old_name,emails, project_id, bucket_id, machine_type,
                    machine_name, startup_script, shutdown_script, machine_zone, after_run,
                    machine_os, cron_schedule, max_running_time, job_name, last_run)
 

@@ -419,3 +419,11 @@ button.btn.add::before {
   content: '\e03b';
   font-size: 25px;
 }
+.left-logo {
+    color: #fff;
+    display: inline-block;
+    vertical-align: middle;
+    //background-image: url("/static/tiny_scheduler_icon.png");
+    height: 48px;
+    width: 150px;
+}
