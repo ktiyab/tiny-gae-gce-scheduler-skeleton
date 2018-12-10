@@ -1,9 +1,5 @@
 """
 Copyright Tiyab KONLAMBIGUE
-
-Licensed under the BSD 3-Clause "New" or "Revised" license;
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at : https://opensource.org/licenses/BSD-3-Clause
 """
 
 import re
@@ -15,38 +11,25 @@ from compute import instance
 from .model import job as jobmodel
 import logging
 import decimal
+import configuration
 
 
-JOB_RUNNING_STATUS = "running"
-MIN_TIME_TO_RUN = 1
-JOB_DEFAULT_STATUS="standby"
-SLEEP_TIME_AFTER_DATASTORE_OP = 2
-SLEEP_TIME_AFTER_GCE_OP = 2
-STOP_AFTER_RUN_VALUE="stop"
-DELETE_AFTER_RUN_VALUE="delete"
+MIN_TIME_TO_RUN = configuration.MIN_TIME_TO_RUN
+SLEEP_TIME_AFTER_DATASTORE_OP = configuration.SLEEP_TIME_AFTER_DATASTORE_OP
+SLEEP_TIME_AFTER_GCE_OP = configuration.SLEEP_TIME_AFTER_GCE_OP
+GCE_PRINCING = configuration.GCE_PRINCING
+GCE_PRINCING_CURRENCY = configuration.GCE_PRINCING_CURRENCY
+MAX_GRACE_MIN = configuration.MAX_GRACE_MIN
 
 GCE_TERMINATED_STATUS = instance.GCE_TERMINATED_STATUS
 GCE_RUNNING_STATUS    = instance.GCE_RUNNING_STATUS
 GCE_STOPPING_STATUS   = instance.GCE_STOPPING_STATUS
 
-"""
-                <option value="f1-micro">f1-micro</option>
-                <option value="g1-small">g1-small</option>
-                <option value="n1-highcpu-8">n1-highcpu-8</option>
-                <option value="n1-highmem-2">n1-highmem-2</option>
-"""
-# Estimated hourly pricing at 2018/12
-GCE_PRINCING = {
-    "f1-micro":"0.0076",
-    "g1-small":"0.0257",
-    "n1-highcpu-8":"0.2836",
-    "n1-highmem-2":"0.1184"
-}
-GCE_PRINCING_CURRENCY = "$"
 
-
-# More minute add to wait before stopping or deleting instance
-MAX_GRACE_MIN = 5
+STOP_AFTER_RUN_VALUE="stop"
+DELETE_AFTER_RUN_VALUE="delete"
+JOB_RUNNING_STATUS = "running"
+JOB_DEFAULT_STATUS="standby"
 
 
 """

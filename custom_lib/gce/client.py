@@ -1,23 +1,12 @@
 """
 Copyright Tiyab KONLAMBIGUE
-
-Licensed under the BSD 3-Clause "New" or "Revised" license;
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at : https://opensource.org/licenses/BSD-3-Clause
 """
 import sys
 import time
 import json
-import googleapiclient.http
 from googleapiclient.discovery import build, DISCOVERY_URI
 from io import StringIO
 from httplib2 import Http
-
-"""
-from oauth2client.client import GoogleCredentials
-from googleapiclient.discovery import build
-from six.moves import input
-"""
 
 #gcloud compute images list
 GCE_DEFAULT_IMAGE_PROJECT = "ubuntu-os-cloud"

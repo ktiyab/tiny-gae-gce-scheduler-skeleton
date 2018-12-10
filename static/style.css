@@ -6,7 +6,9 @@ body,html{
     margin:0;
     -webkit-text-size-adjust:100%;
     -ms-text-size-adjust:100%;
-    text-size-adjust:100%
+    text-size-adjust:100%;
+    font-family: 'Roboto',sans-serif;
+    font-size: 14px;
 }
 
 input[type="text"],
@@ -171,9 +173,6 @@ select {
 #container-full{
     background-color: #fff;
     background-clip: padding-box;
-    //border: 1px solid rgba(0,0,0,0.2);
-    //border-radius: 6px;
-    //box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     margin: 0 auto 30px;
     padding: 30px;
     position: relative;
@@ -209,9 +208,7 @@ header {
     -moz-osx-font-smoothing: grayscale;
     background: #fff;
     box-shadow: 0px 2px 6px 0px rgba(0,0,0,.12);
-    //font-weight: bold;
     overflow: hidden;
-    //position: fixed;
     top: 0;
     width: 100%;
     z-index: 100;
@@ -224,7 +221,6 @@ header, main, footer, #content, #breadcrumbs {
 .header-nav>a {
     background: rgba(255,255,255,0);
     border: 1px solid transparent;
-    //border-radius: 4px;
     display: inline-block;
     font-size: 1rem;
     line-height: 1.2;
@@ -285,6 +281,17 @@ tbody {
     vertical-align: middle;
     border-color: inherit;
 }
+table tbody tr td a{
+    text-decoration: none;
+    padding-bottom: 1px;
+    color: rgba(0,0,0,.987);
+    font-weight: normal;
+}
+table tbody tr td a:hover{
+    text-decoration: underline;
+    color: blue;
+}
+
 thead {
     display: table-header-group;
     vertical-align: middle;
@@ -338,7 +345,7 @@ thead {
     background: #eee;
     color: #333;
     font-weight: normal;
-    font: 500 16px/24px Roboto,sans-serif;
+    font: 500 14px/24px Roboto,sans-serif;
     height: 48px;
     padding: 8px;
     vertical-align: middle;
@@ -420,10 +427,9 @@ button.btn.add::before {
   font-size: 25px;
 }
 .left-logo {
-    color: #fff;
     display: inline-block;
     vertical-align: middle;
-    //background-image: url("/static/tiny_scheduler_icon.png");
+    background-image: url("/static/tiny_scheduler_icon.png");
     height: 48px;
-    width: 150px;
+    width: 48px;
 }

@@ -1,24 +1,16 @@
 """
 Copyright Tiyab KONLAMBIGUE
-
-Licensed under the BSD 3-Clause "New" or "Revised" license;
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at : https://opensource.org/licenses/BSD-3-Clause
 """
 from gce import client
 import logging
 import time
 from model import job as jobmodel
+import configuration
 
-JSON_KEY_FOLDER = "./credentials/"
-SLEEP_TIME_AFTER_GCE_OP = 2
+JSON_KEY_FOLDER = configuration.JSON_KEY_FOLDER
 
-images_config = [
-    {
-    "key-word": "ubuntu",
-    "image-project" : "ubuntu-os-cloud"
-    }
-]
+# Google instance image project configs
+IMAGES_PROJECT = configuration.IMAGES_PROJECT
 
 class instance():
 
@@ -29,6 +21,13 @@ class instance():
     def __init__(self, project_id):
         self.project_id =project_id
         self.json_key_path = JSON_KEY_FOLDER + project_id + ".json"
+
+        client.GCE_DEFAULT_ZONE=configuration.GCE_DEFAULT_ZONE
+        client.GCE_DEFAULT_MACHINE_TYPE=configuration.GCE_DEFAULT_MACHINE_TYPE
+        client.GCE_DEFAULT_IMAGE_NAME=configuration.GCE_DEFAULT_IMAGE_NAME
+        client.GCE_DEFAULT_IMAGE_PROJECT=configuration.GCE_DEFAULT_IMAGE_PROJECT
+        client.GCE_DEFAULT_FULL_SCOPE=configuration.GCE_DEFAULT_FULL_SCOPE
+
         self.gce_client = client.get_client(json_key_file=self.json_key_path, readonly=False)
 
 
@@ -72,7 +71,6 @@ class instance():
             #startup_script_path= SCRIPT_FOLDER + startup_scrip_name
             self.gce_client.create_instance(project, instance_name, startup_script_path,shutdown_script_path,
                                             bucket_id, zone, image_project, image_name,type_machine)
-            time.sleep(SLEEP_TIME_AFTER_GCE_OP)
 
             #Check if machine is created
             if self.exist(instance_name, project):
@@ -91,7 +89,6 @@ class instance():
             if current_status != "STOPPING" and \
                 current_status != "TERMINATED":
                     self.gce_client.stop_instance(project, instance_name, zone)
-                    time.sleep(SLEEP_TIME_AFTER_GCE_OP)
 
             #Check is instance is stopped correctly
             if self.status_of(instance_name, project) == "TERMINATED":
@@ -109,7 +106,6 @@ class instance():
             current_status = self.status_of(instance_name, project)
             if current_status == "TERMINATED":
                 self.gce_client.start_instance(project, instance_name, zone)
-                time.sleep(SLEEP_TIME_AFTER_GCE_OP)
 
             # Check is instance is stopped correctly
             if self.status_of(instance_name, project) == "RUNNING":
@@ -124,7 +120,6 @@ class instance():
 
         if self.exist(instance_name, project):
             self.gce_client.delete_instance(project, instance_name, zone)
-            time.sleep(SLEEP_TIME_AFTER_GCE_OP)
 
             # Check is instance is removed correctly
             if not self.exist(instance_name, project):
@@ -178,7 +173,7 @@ class instance():
 
             #Find image project by machine_os
             os_project = None
-            for image in images_config:
+            for image in IMAGES_PROJECT:
                 if image["key-word"] in machine_os:
                     os_project = image["image-project"]
 
@@ -186,7 +181,6 @@ class instance():
             if not os_project is None:
                 new_instance_running = self.create(project_id,machine_name,startup_script,shutdown_script,
                                                    bucket_id,machine_zone, os_project, machine_os, machine_type)
-                time.sleep(SLEEP_TIME_AFTER_GCE_OP)
 
             if new_instance_running:
                 # Update Datastore
@@ -220,8 +214,6 @@ class instance():
                 self.stop(machine_name, project_id, machine_zone)
             if after_run =="delete":
                 self.delete(machine_name, project_id, machine_zone)
-
-            time.sleep(SLEEP_TIME_AFTER_GCE_OP)
 
         current_status = self.status_of(machine_name, project_id)
 

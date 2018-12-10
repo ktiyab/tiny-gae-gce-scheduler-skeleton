@@ -2,7 +2,7 @@
 
 ## Introduction 
 
-Warning: This is an POC which will be ameliorate
+Warning: This is an POC which will be improved
 
 TGJS is a tiny GCP interfaced tool designed to help for reducing  costs of jobs planning in GCP in order to make the use of GCP more profitable for small business, even if he is already in some way.
 
