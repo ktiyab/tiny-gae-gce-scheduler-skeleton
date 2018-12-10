@@ -30,7 +30,7 @@ GCE_PRICING = {
     "n1-highcpu-8":"0.2836",
     "n1-highmem-2":"0.1184"
 }
-GCE_PRINCING_CURRENCY = "$"
+GCE_PRICING_CURRENCY = "$"
 
 
 # More minute add to wait before stopping or deleting instance
