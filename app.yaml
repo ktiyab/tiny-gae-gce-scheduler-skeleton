@@ -15,6 +15,11 @@ handlers:
   static_dir: static
   application_readable: true
 
+- url: /favicon.ico
+  static_files: /static/favicon.ico
+  upload: /static/favicon.ico
+
+
 builtins:
 - deferred: on
 
