@@ -1,10 +1,10 @@
-# Tiny Google Cloud Platform Jobs Scheduler
+# Tiny Google App Engine Jobs Scheduler
 
 ## Introduction 
 
 Warning: This is an POC which will be improved
 
-TGJS is a tiny GCP interfaced tool designed to help for reducing  costs of jobs planning in GCP in order to make the use of GCP more profitable for small business, even if he is already in some way.
+This app is a tiny GAE interfaced tool designed to help for reducing  costs of jobs planning in GCP in order to make the use of GCP more profitable for small business, even if he is already in some way.
 
 For now some of solutions given by Google on GCP can be expensive or are not optimized by integrating easy use of combination of free services. This tool aim to help staying in the free tier usage of GCP,  as describe on this link: https://cloud.google.com/free/docs/always-free-usage-limits
 
@@ -65,9 +65,9 @@ You can use this tool if you want to run a quick job on Google Compute Engine by
 
 ## Presentation 
 
-TGJS is based on Google App Engine (GAE), Google Datastore (GD), Google Compute Engine (GCE) and Google Cloud Storage (GCS). TGJS run on a tiny instance of GAE, with his interface you can schedule jobs which are saved in Datastore. GAE crontab run by default every 1 min and then read jobs list scheduled in Datastore, create job queues wich can automatically create GCE instances.
+This App is based on Google App Engine (GAE), Google Datastore (GD), Google Compute Engine (GCE) and Google Cloud Storage (GCS). TGJS run on a tiny instance of GAE, with his interface you can schedule jobs which are saved in Datastore. GAE crontab run by default every 1 min and then read jobs list scheduled in Datastore, create job queues wich can automatically create GCE instances.
 
-TGJS with GCE can run your scripts from GCS on instance startup. When instances are shutdown GCE can run your shutdown script and TGJS can  stop or delete the GCE instance after an elapsed time indicated by you.
+This App with GCE can run your scripts from GCS on instance startup. When instances are shutdown GCE can run your shutdown script and TGJS can  stop or delete the GCE instance after an elapsed time indicated by you.
 
 ### 1 - Checkout the code skeleton
 

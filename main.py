@@ -268,30 +268,29 @@ def create_job():
     operation_type = request.form['operation_type'].strip()
     old_name = request.form['old_name'].strip()
 
+    # Check if job exist
+    existing_job = app_utils.get_job_by_name(job_name)
+    logging.info("create_job: Saving new job " + request.form['job_name'] + " to datastore ...")
+    is_valid_conf = app_utils.is_job_config_valid(emails, cron_schedule, max_running_time,
+                                                  project_id, bucket_id, machine_name,startup_script, shutdown_script)
+    alert_message = ""
 
-    if operation_type == "None":
+    if operation_type == "None" or operation_type=="correct_before_insert":
 
-        # Check if job exist
-
-        existing_job=app_utils.get_job_by_name(job_name)
-
-        logging.info("create_job: Saving new job "+request.form['job_name']+" to datastore ...")
-
-        is_valid_conf = app_utils.is_job_config_valid(emails, cron_schedule, max_running_time)
 
         # If job exist redirect user to update job page with alert
-        if len(existing_job) > 0 or is_valid_conf!="":
+        if len(existing_job) > 0:
 
             if existing_job[0].job_name == request.form['job_name']:
 
                 alert_type ="errorDialog"
+                alert_message= alert_message + "Job already exist with the same name " +existing_job[0].job_name
+                logging.info("Job already exist with the same name  " + request.form['job_name'] + " in datastore ...")
 
-                if len(existing_job) > 0:
-                    alert_message="Job already exist with the same name " +existing_job[0].job_name
-                    logging.info("Job already exist with the same name  " + request.form['job_name'] + " in datastore ...")
-                else:
-                    alert_message = "Cron value is not valid, please correct the value."
-                    logging.info("Cron value ("+cron_schedule+") is not valid, please correct the value.")
+
+                if is_valid_conf == "":
+                    alert_message = alert_message + is_valid_conf
+                    logging.info(alert_message)
 
                 operation_type="correct_before_insert"
                 old_name="None"
@@ -328,13 +327,32 @@ def create_job():
     else:
 
         # Check if job exist
-        last_run=None
-        result = app_utils.update_job(old_name,emails, project_id, bucket_id, machine_type,
-                   machine_name, startup_script, shutdown_script, machine_zone, after_run,
-                   machine_os, cron_schedule, max_running_time, job_name, last_run)
+        if is_valid_conf == "":
+            last_run=None
+            result = app_utils.update_job(old_name,emails, project_id, bucket_id, machine_type,
+                       machine_name, startup_script, shutdown_script, machine_zone, after_run,
+                       machine_os, cron_schedule, max_running_time, job_name, last_run)
 
-        if not result:
-            logging.info("Unable to update job " + old_name + ", job not found ...")
+            if not result:
+                logging.info("Unable to update job " + old_name + ", job not found ...")
+
+        else:
+            alert_type = "errorDialog"
+            alert_message = is_valid_conf
+            operation_type = "upadte"
+            old_name = "None"
+            logging.info(is_valid_conf)
+
+            return redirect(url_for('modify_job_info', emails=emails, project_id=project_id, bucket_id=bucket_id,
+                                    machine_name=app_utils.valid_instance_name(machine_name),
+                                    startup_script=startup_script,
+                                    shutdown_script=shutdown_script, machine_type=machine_type,
+                                    machine_zone=machine_zone,
+                                    after_run=after_run, machine_os=machine_os, cron_schedule=cron_schedule,
+                                    max_running_time=max_running_time,
+                                    job_name=job_name, alert_type=alert_type, alert_message=alert_message,
+                                    operation_type=operation_type,
+                                    old_name=old_name))
 
         return redirect(url_for('list_job'))
 

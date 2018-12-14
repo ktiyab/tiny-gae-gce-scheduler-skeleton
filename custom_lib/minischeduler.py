@@ -110,7 +110,11 @@ class utils():
         return (diff.days * 24 * 60) + (diff.seconds / 60)
 
 
-    def is_job_config_valid(self, emails, cron_schedule, max_running_time):
+    def is_job_config_valid(self, emails, cron_schedule, max_running_time,
+                            project_id, bucket_id, machine_name, startup_script, shutdown_script):
+
+        #gs://bucket_name/script_name.(sh or python)
+        regex_valid_gcs_path = re.compile(r'(^(?:gs)s?:\/\/[a-z0-9].*\/[a-zA-Z0-9-_].*\.(sh|python)$)', re.IGNORECASE)
 
         message = ""
         #Check crontab
@@ -122,7 +126,7 @@ class utils():
 
         for email in emails_list:
             if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email) == None:
-                message = message + "\n Email is not valid email, please correct your email."
+                message = message + "\n Email is not a valid email, please correct your email list."
 
         # Check is max run time in minute is valide number
         try:
@@ -130,6 +134,23 @@ class utils():
         except ValueError:
             message = message + "\n Value of max run time (in minute) is not valid."
             pass
+
+        # Check project, bucket, machine name, startup and shutdown script
+        if project_id=="":
+            message = message + "\n Invalid project id, please correct the project id."
+
+        if bucket_id=="":
+            message = message + "\n Invalid bucket id, please correct the bucket id."
+
+        if machine_name=="":
+            message = message + "\n Invalid Instance name, please correct the instance name."
+
+        if startup_script=="" or re.match(regex_valid_gcs_path, startup_script) == None:
+            message = message + "\n Invalid startup script, please correct the startup script path."
+
+        if shutdown_script=="" or re.match(regex_valid_gcs_path, shutdown_script) == None:
+            message = message + "\n Invalid shutdown script, please correct the shutdown script path."
+
 
         return message
 
